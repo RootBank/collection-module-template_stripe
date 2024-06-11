@@ -1,0 +1,35 @@
+{
+  "dependencies": {
+    "@rootplatform/node-sdk": "^0.0.7",
+    "joi": "11.4.0",
+    "moment-timezone": "0.5.40",
+    "node-fetch": "2.6.7",
+    "phone": "2.4.22",
+    "stripe": "14.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.20",
+    "@types/node-fetch": "^2.6.11",
+    "eslint": "^8.51.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-import-resolver-webpack": "^0.13.2",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-mocha": "^10.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-sonarjs": "^0.18.0",
+    "eslint-plugin-unicorn": "^48.0.1",
+    "prettier": "^2.8.3"
+  },
+  "scripts": {
+    "lint": "eslint code --ext .js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint --fix code --ext .js,.jsx,.ts,.tsx --no-error-on-unmatched-pattern --quiet",
+    "prettier-check": "npx prettier --check code/",
+    "prettier-write": "prettier --write code/",
+    "build": "rm -rf ./dist && tsc"
+  },
+  "engines": {
+    "npm": ">=8.0.0",
+    "node": ">=18.0.0"
+  }
+}

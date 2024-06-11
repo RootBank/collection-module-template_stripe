@@ -1,0 +1,29 @@
+name: Publish Release
+run-name: ${{ github.actor }} released a new version 🚀
+on:
+  release:
+    types: [published]
+jobs:
+  Publish-Release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Install root platform CLI
+        run: npm install -g @rootplatform/cli
+
+      - name: Push Product Module
+        run: |
+          touch .root-auth
+          echo ROOT_API_KEY=${{ secrets.ROOT_API_KEY }} >> .root-auth
+          rp push -f
+          rm .root-auth
+
+      - name: Publish Product Module
+        if: '!github.event.release.prerelease'
+        run: |
+          touch .root-auth
+          echo ROOT_API_KEY=${{ secrets.ROOT_API_KEY }} >> .root-auth
+          rp publish -f
+          rm .root-auth
