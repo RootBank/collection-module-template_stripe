@@ -63,6 +63,23 @@ class ProcessPolicyCancellationEventsController {
         policy.app_data.stripe_subscription_schedule_id as string,
       );
 
+    if (
+      subscriptionSchedule.status === 'active' ||
+      subscriptionSchedule.status === 'not_started'
+    ) {
+      Logger.info('Cancelling subscription schedule', {
+        subscriptionSchedule,
+      });
+
+      await this.stripeClient.stripeSDK.subscriptionSchedules.cancel(
+        policy.app_data.stripe_subscription_schedule_id as string,
+        {
+          prorate: shouldProrate,
+          invoice_now: shouldProrate,
+        },
+      );
+    }
+
     // check if the associated subscription is cancellable
     const stripeSubscriptionId =
       policy.app_data.stripe_subscription_id ||
@@ -88,23 +105,6 @@ class ProcessPolicyCancellationEventsController {
           },
         );
       }
-    }
-
-    if (
-      subscriptionSchedule.status === 'active' ||
-      subscriptionSchedule.status === 'not_started'
-    ) {
-      Logger.info('Cancelling subscription schedule', {
-        subscriptionSchedule,
-      });
-
-      await this.stripeClient.stripeSDK.subscriptionSchedules.cancel(
-        policy.app_data.stripe_subscription_schedule_id as string,
-        {
-          prorate: shouldProrate,
-          invoice_now: shouldProrate,
-        },
-      );
     }
 
     const newAppData = {
