@@ -14,13 +14,13 @@ interface EnvironmentConfig {
 
 interface IConfig {
   production: EnvironmentConfig;
-  development: EnvironmentConfig;
+  sandbox: EnvironmentConfig;
 }
 
 const baseConfig = {
   timeDelayInMilliseconds: env.TIME_DELAY_IN_MILLISECONDS,
   rootCollectionModuleKey: env.ROOT_COLLECTION_MODULE_KEY,
-  environment: process.env.ENVIRONMENT || 'development',
+  environment: process.env.ENVIRONMENT || 'sandbox',
 };
 
 const production: EnvironmentConfig = {
@@ -33,7 +33,7 @@ const production: EnvironmentConfig = {
   rootBaseUrl: env.ROOT_BASE_URL_LIVE,
 };
 
-const development: EnvironmentConfig = {
+const sandbox: EnvironmentConfig = {
   ...baseConfig,
   stripeWebhookSigningSecret: env.STRIPE_WEBHOOK_SIGNING_SECRET_TEST,
   stripePublishableKey: env.STRIPE_PUBLISHABLE_KEY_TEST,
@@ -45,7 +45,7 @@ const development: EnvironmentConfig = {
 
 const config: IConfig = {
   production,
-  development,
+  sandbox,
 };
 
 class ConfigurationService {
@@ -55,7 +55,7 @@ class ConfigurationService {
   public isProduction: boolean;
 
   constructor() {
-    this.environment = process.env.ENVIRONMENT || 'development';
+    this.environment = process.env.ENVIRONMENT || 'sandbox';
     this.validateEnvironment();
     this.env = config[this.environment as keyof typeof config];
     this.isProduction = this.env.environment === 'production';

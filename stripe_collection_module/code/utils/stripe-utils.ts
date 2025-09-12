@@ -126,13 +126,15 @@ class StripeUtils {
     });
 
     const dataObject = event.data.object;
+    Logger.info(dataObject);
+    Logger.info(dataObject.parent);
+    Logger.info(dataObject.parent.subscription_details);
+    Logger.info(dataObject.parent.subscription_details.metadata);
+    Logger.info(dataObject.parent.subscription_details.metadata.rootPolicyId);
 
     switch (type) {
       case StripeEvents.InvoiceCreated: {
-        const rootPolicyId =
-          dataObject?.metadata?.rootPolicyId ||
-          dataObject?.subscription_details?.metadata?.rootPolicyId;
-        return rootPolicyId;
+        return dataObject.parent.subscription_details.metadata.rootPolicyId;
       }
       case StripeEvents.InvoicePaid:
       case StripeEvents.InvoicePaymentFailed:
