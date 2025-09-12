@@ -1,8 +1,10 @@
 {
-  "collectionModuleKey": "demo_stripe",
-  "collectionModuleName": "Demo Stripe Collection Module",
-  "organizationId": "53c217dd-e83f-4cc1-9647-952729cbb5a4",
-  "host": "https://api.uk.rootplatform.com/",
-  "settings": {},
+  "collectionModuleKey": "my_collection_module_cm_stripe",
+  "collectionModuleName": "Stripe Collection Module",
+  "organizationId": "00000000-0000-0000-0000-000000000001",
+  "host": "http://localhost:4000",
+  "settings": {
+    "legacyCodeExecution": false
+  },
   "manualTransactions": []
 }

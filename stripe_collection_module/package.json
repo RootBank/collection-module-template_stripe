@@ -1,11 +1,11 @@
 {
   "dependencies": {
+    "@rootplatform/node-sdk": "^0.0.7",
     "joi": "11.4.0",
     "moment-timezone": "0.5.40",
     "node-fetch": "2.6.7",
     "phone": "2.4.22",
-    "stripe": "14.5.0",
-    "@rootplatform/node-sdk": "^0.0.4"
+    "stripe": "14.5.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.20",
