@@ -1,16 +1,21 @@
 {
   "include": [
-    "./code/**/*"
+    "./code/**/*",
+    "./__tests__/**/*"
   ],
   "compilerOptions": {
     "lib": [
-      "es2022"
+      "es2022",
+      "dom"
     ],
     "module": "es2022",
+    "target": "es2022",
     "skipLibCheck": true,
     "allowJs": true,
     "strict": true,
     "moduleResolution": "Bundler",
-    "noEmit": true
+    "downlevelIteration": true,
+    "noEmit": true,
+    "types": ["jest"]
   }
 }

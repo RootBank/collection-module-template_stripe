@@ -1,11 +1,15 @@
 import { RootSDKClient } from '@rootplatform/node-sdk';
-import Config from '../config';
+import { getConfigService } from '../services/config-instance';
 
 class RootClient {
   public SDK: RootSDKClient;
 
   constructor() {
-    this.SDK = new RootSDKClient(Config.env.rootApiKey, Config.env.rootBaseUrl);
+    const config = getConfigService();
+    this.SDK = new RootSDKClient(
+      config.get('rootApiKey'),
+      config.get('rootBaseUrl')
+    );
   }
 }
 
