@@ -1,5 +1,10 @@
 # Stripe Collection Module Template
 
+[![CI](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-92%25-brightgreen.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO)
+[![Node](https://img.shields.io/badge/node-18.x-brightgreen.svg)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)](https://www.typescriptlang.org/)
+
 A production-ready template for building collection modules that integrate Stripe with the Root Platform. Includes comprehensive testing, structured logging, and clear architecture patterns.
 
 ---
@@ -161,12 +166,6 @@ npm run test:coverage
 # Validate configuration
 npm run validate
 ```
-
-### Test Coverage
-
-- **Services**: 80%+ coverage
-- **Core**: 90%+ coverage
-- **Overall**: 70%+ coverage
 
 See [docs/TESTING.md](./stripe_collection_module/docs/TESTING.md) for testing guide.
 

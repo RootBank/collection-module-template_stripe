@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: stripe_collection_module/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd stripe_collection_module
+          npm ci
+
+      - name: Run linter
+        run: |
+          cd stripe_collection_module
+          npm run lint
+
+      - name: Run tests with coverage
+        run: |
+          cd stripe_collection_module
+          npm test -- --coverage --ci
+
+      - name: Check coverage thresholds
+        run: |
+          cd stripe_collection_module
+          npm test -- --coverage --ci --silent
+
+      - name: Comment PR with coverage
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        continue-on-error: true
+        with:
+          script: |
+            const fs = require('fs');
+            const coveragePath = './stripe_collection_module/coverage/coverage-summary.json';
+
+            if (fs.existsSync(coveragePath)) {
+              const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+              const total = coverage.total;
+              
+              const comment = `## 📊 Test Coverage Report
+              
+              | Category | Coverage |
+              |----------|----------|
+              | **Statements** | ${total.statements.pct.toFixed(2)}% |
+              | **Branches** | ${total.branches.pct.toFixed(2)}% |
+              | **Functions** | ${total.functions.pct.toFixed(2)}% |
+              | **Lines** | ${total.lines.pct.toFixed(2)}% |
+              
+              ${total.statements.pct >= 70 ? '✅' : '❌'} Coverage threshold: 70%
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'npm'
+          cache-dependency-path: stripe_collection_module/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd stripe_collection_module
+          npm ci
+
+      - name: Build TypeScript
+        run: |
+          cd stripe_collection_module
+          npm run build
+
+      - name: Check for build artifacts
+        run: |
+          cd stripe_collection_module
+          if [ ! -d "dist" ]; then
+            echo "Build artifacts not found!"
+            exit 1
+          fi
+          echo "✅ Build successful"
