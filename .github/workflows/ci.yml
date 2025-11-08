@@ -7,22 +7,18 @@ on:
     branches: [main, master, develop]
 
 jobs:
-  test:
-    name: Test & Lint
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 18.x
           cache: 'npm'
           cache-dependency-path: stripe_collection_module/package-lock.json
 
@@ -36,20 +32,40 @@ jobs:
           cd stripe_collection_module
           cp code/env.sample.ts code/env.ts
 
-      - name: Run linter
+      - name: Run ESLint
         run: |
           cd stripe_collection_module
           npm run lint
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: 'npm'
+          cache-dependency-path: stripe_collection_module/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd stripe_collection_module
+          npm ci
+
+      - name: Create env.ts for build
+        run: |
+          cd stripe_collection_module
+          cp code/env.sample.ts code/env.ts
 
       - name: Run tests with coverage
         run: |
           cd stripe_collection_module
           npm test -- --coverage --ci
-
-      - name: Check coverage thresholds
-        run: |
-          cd stripe_collection_module
-          npm test -- --coverage --ci --silent
 
       - name: Comment PR with coverage
         if: github.event_name == 'pull_request'
@@ -63,19 +79,19 @@ jobs:
             if (fs.existsSync(coveragePath)) {
               const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
               const total = coverage.total;
-              
+
               const comment = `## 📊 Test Coverage Report
-              
+
               | Category | Coverage |
               |----------|----------|
               | **Statements** | ${total.statements.pct.toFixed(2)}% |
               | **Branches** | ${total.branches.pct.toFixed(2)}% |
               | **Functions** | ${total.functions.pct.toFixed(2)}% |
               | **Lines** | ${total.lines.pct.toFixed(2)}% |
-              
+
               ${total.statements.pct >= 70 ? '✅' : '❌'} Coverage threshold: 70%
               `;
-              
+
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,

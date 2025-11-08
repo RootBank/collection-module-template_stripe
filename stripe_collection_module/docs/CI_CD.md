@@ -20,8 +20,9 @@ When you create or update a pull request, GitHub Actions automatically:
 
 ### Status Checks
 
-Pull requests show status checks:
-- ✅ **Test & Lint** - All tests pass with coverage
+Pull requests show three independent status checks:
+- ✅ **Lint** - ESLint passes with no errors
+- ✅ **Test** - All tests pass with 70%+ coverage
 - ✅ **Build Check** - TypeScript compiles successfully
 
 **You cannot merge** until all checks pass.
@@ -39,26 +40,34 @@ Pull requests show status checks:
 
 ### Jobs
 
-#### 1. Test & Lint Job
+#### 1. Lint Job
 
 ```yaml
 - Checkout code
 - Setup Node.js 18.x
 - Install dependencies (npm ci)
-- Create env.ts from env.sample.ts (for TypeScript compilation)
+- Create env.ts from env.sample.ts
 - Run ESLint
-- Run Jest tests with coverage
-- Verify 70% threshold
-- Comment coverage on PR
 ```
 
-#### 2. Build Job
+#### 2. Test Job
 
 ```yaml
 - Checkout code
 - Setup Node.js 18.x
-- Install dependencies
-- Create env.ts from env.sample.ts (for TypeScript compilation)
+- Install dependencies (npm ci)
+- Create env.ts from env.sample.ts
+- Run Jest tests with coverage (275+ tests)
+- Comment coverage report on PR
+```
+
+#### 3. Build Job
+
+```yaml
+- Checkout code
+- Setup Node.js 18.x
+- Install dependencies (npm ci)
+- Create env.ts from env.sample.ts
 - Build TypeScript (type checking only - noEmit: true)
 ```
 
