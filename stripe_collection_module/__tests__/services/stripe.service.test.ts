@@ -4,52 +4,26 @@
 
 import Stripe from 'stripe';
 import { StripeService } from '../../code/services/stripe.service';
-import { LogService } from '../../code/services/log.service';
-import StripeClient from '../../code/clients/stripe-client';
-
-jest.mock('../../code/services/log.service');
+import {
+  createMockLogService,
+  createMockStripeClient,
+} from '../test-helpers';
 
 describe('StripeService', () => {
   let stripeService: StripeService;
-  let mockLogService: jest.Mocked<LogService>;
-  let mockStripeClient: jest.Mocked<StripeClient>;
+  let mockLogService: ReturnType<typeof createMockLogService>;
+  let mockStripeClient: ReturnType<typeof createMockStripeClient>;
   let mockStripeSDK: any;
 
   beforeEach(() => {
-    // Create mock LogService
-    mockLogService = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      generateCorrelationId: jest.fn(),
-    } as any;
+    mockLogService = createMockLogService();
+    mockStripeClient = createMockStripeClient();
+    mockStripeSDK = mockStripeClient.stripeSDK;
 
-    // Create mock Stripe SDK with jest.fn() for all methods
-    mockStripeSDK = {
-      customers: {
-        create: jest.fn(),
-        retrieve: jest.fn(),
-        update: jest.fn(),
-      },
-      paymentIntents: {
-        create: jest.fn(),
-      },
-      paymentMethods: {
-        retrieve: jest.fn(),
-        attach: jest.fn(),
-      },
-      subscriptions: {
-        cancel: jest.fn(),
-      },
-    };
-
-    // Create mock StripeClient
-    mockStripeClient = {
-      stripeSDK: mockStripeSDK,
-    } as any;
-
-    stripeService = new StripeService(mockLogService, mockStripeClient);
+    stripeService = new StripeService(
+      mockLogService as any,
+      mockStripeClient as any
+    );
   });
 
   afterEach(() => {

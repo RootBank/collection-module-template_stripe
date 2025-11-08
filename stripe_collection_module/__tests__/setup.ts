@@ -12,8 +12,5 @@ process.env.ROOT_COLLECTION_MODULE_SECRET = 'test_secret';
 process.env.STRIPE_SECRET_KEY = 'sk_test_123';
 process.env.STRIPE_PUBLISHABLE_KEY = 'pk_test_123';
 
-// Extend Jest matchers if needed
-// import '@testing-library/jest-dom';
-
-// Set up any global test configuration here
-
+// Note: Global mocks removed - use test-helpers.ts setupConfigMock() instead
+// This prevents conflicts when testing the actual config/log instance modules

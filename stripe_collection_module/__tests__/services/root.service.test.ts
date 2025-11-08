@@ -4,35 +4,20 @@
 
 import * as root from '@rootplatform/node-sdk';
 import { RootService } from '../../code/services/root.service';
-import { LogService } from '../../code/services/log.service';
-jest.mock('../../code/services/log.service');
+import { createMockLogService, createMockRootClient } from '../test-helpers';
 
 describe('RootService', () => {
   let rootService: RootService;
-  let mockLogService: jest.Mocked<LogService>;
-  let mockRootClient: any;
+  let mockLogService: ReturnType<typeof createMockLogService>;
+  let mockRootClient: ReturnType<typeof createMockRootClient>;
   let mockRootSDK: any;
 
   beforeEach(() => {
-    // Create mock LogService
-    mockLogService = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn(),
-      generateCorrelationId: jest.fn(),
-    } as any;
+    mockLogService = createMockLogService();
+    mockRootClient = createMockRootClient();
+    mockRootSDK = mockRootClient.SDK;
 
-    // Create mock Root SDK
-    mockRootSDK = {
-      getPolicyById: jest.fn(),
-      updatePaymentsAsync: jest.fn(),
-    };
-
-    // Mock rootClient.SDK
-    mockRootClient = { SDK: mockRootSDK } as any;
-
-    rootService = new RootService(mockLogService, mockRootClient);
+    rootService = new RootService(mockLogService as any, mockRootClient as any);
   });
 
   afterEach(() => {
@@ -388,4 +373,3 @@ describe('RootService', () => {
     });
   });
 });
-

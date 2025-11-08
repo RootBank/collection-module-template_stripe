@@ -13,6 +13,9 @@ module.exports = {
     '!code/env.sample.ts',
     '!code/sample.env.ts',
     '!code/main.ts',
+    '!code/utils/index.ts',
+    '!code/interfaces/**',
+    '!code/lifecycle-hooks/index.ts',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
@@ -32,6 +35,3 @@ module.exports = {
   resetMocks: true,
   restoreMocks: true,
 };
-
-
-
