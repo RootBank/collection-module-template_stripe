@@ -116,19 +116,6 @@ The `RenderService` centralizes all HTML generation:
 
 ## Data Flow
 
-### Payment Method Assignment
-
-```
-Root Platform
-    ↓ (afterPolicyPaymentMethodAssigned event)
-Lifecycle Hook
-    ↓
-Implementation TODO
-    ├→ Create Stripe customer
-    ├→ Attach payment method
-    └→ Update Root policy with Stripe IDs
-```
-
 ### Webhook Processing
 
 ```
@@ -148,22 +135,22 @@ Event-Specific Controller
 
 ### LogService
 - **Purpose**: Structured JSON logging to stdout
-- **Key Methods**: `debug()`, `info()`, `warn()`, `error()`
 - **Features**: Correlation IDs, JSON formatting, multiple log levels
 
 ### ConfigurationService
 - **Purpose**: Type-safe, validated configuration management
-- **Key Methods**: `get()`, `getAll()`, `isProduction()`
 - **Features**: Environment-specific configs, validation on startup
 
 ### RenderService
 - **Purpose**: Generate HTML for dashboard views
-- **Key Methods**: `renderCreatePaymentMethod()`, `renderViewPaymentMethod()`
 - **Features**: XSS protection, consistent styling
 
 ### RootService
-- **Purpose**: High-level Root platform operations
-- **Key Methods**: `getPolicy()`, `updatePaymentStatus()`, `createPayment()`
+- **Purpose**: Root platform operations
+- **Features**: Business logic for Root API interactions
+
+### StripeService
+- **Purpose**: Stripe operations
 - **Features**: Business logic for Root API interactions
 
 ## Extension Points
@@ -221,7 +208,4 @@ For questions or clarifications, consult:
 - [TESTING.md](./TESTING.md) - Testing guide
 - [CUSTOMIZING.md](./CUSTOMIZING.md) - Implementation guide
 - Source code comments and JSDoc
-
-
-
 
