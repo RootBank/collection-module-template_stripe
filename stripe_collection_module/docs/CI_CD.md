@@ -45,9 +45,9 @@ Pull requests show status checks:
 - Checkout code
 - Setup Node.js 18.x
 - Install dependencies (npm ci)
+- Create env.ts from env.sample.ts (for TypeScript compilation)
 - Run ESLint
 - Run Jest tests with coverage
-- Upload coverage to Codecov
 - Verify 70% threshold
 - Comment coverage on PR
 ```
@@ -58,6 +58,7 @@ Pull requests show status checks:
 - Checkout code
 - Setup Node.js 18.x
 - Install dependencies
+- Create env.ts from env.sample.ts (for TypeScript compilation)
 - Build TypeScript
 - Verify dist/ created
 ```
@@ -214,6 +215,14 @@ The project includes a PR template that prompts you to:
 - Disable coverage checks
 
 ## Troubleshooting
+
+### "Cannot find module '../env'" Error
+
+**Cause:** The `code/env.ts` file is gitignored and not in the repository.
+
+**Solution:** The CI workflow automatically creates `code/env.ts` from `code/env.sample.ts` before building. If this step fails, check that `env.sample.ts` exists and is valid.
+
+**Why this happens:** Environment files contain secrets and should never be committed. The CI uses the sample file as a placeholder for compilation.
 
 ### "npm ci" Fails
 

@@ -31,6 +31,11 @@ jobs:
           cd stripe_collection_module
           npm ci
 
+      - name: Create env.ts for build
+        run: |
+          cd stripe_collection_module
+          cp code/env.sample.ts code/env.ts
+
       - name: Run linter
         run: |
           cd stripe_collection_module
@@ -98,6 +103,11 @@ jobs:
         run: |
           cd stripe_collection_module
           npm ci
+
+      - name: Create env.ts for build
+        run: |
+          cd stripe_collection_module
+          cp code/env.sample.ts code/env.ts
 
       - name: Build TypeScript
         run: |
