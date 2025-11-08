@@ -1,0 +1,586 @@
+# Collection Module Architecture Patterns
+
+This MCP provides architectural patterns and guidelines for the Stripe Collection Module.
+
+## Architecture Overview
+
+### Layer Structure
+```
+Entry Points (main.ts, webhook-hooks)
+    ↓
+Lifecycle Hooks & Controllers (orchestration)
+    ↓
+Services (business logic)
+    ↓
+Clients & Adapters (infrastructure)
+    ↓
+External APIs (Stripe, Root)
+```
+
+### Key Principles
+- **Separation of Concerns**: Each layer has single responsibility
+- **Dependency Injection**: All dependencies via constructor
+- **Type Safety**: TypeScript throughout
+- **Testability**: Unit tests with mocked dependencies
+
+## Clients Pattern
+
+### Purpose
+Thin wrappers around external API SDKs.
+
+### Structure
+```typescript
+import Stripe from 'stripe';
+import { getConfigService } from '../services/config-instance';
+
+export default class StripeClient {
+  public stripeSDK: Stripe;
+
+  constructor() {
+    const config = getConfigService();
+    this.stripeSDK = new Stripe(config.get('stripeSecretKey'));
+  }
+}
+```
+
+### Usage
+```typescript
+import StripeClient from '../clients/stripe-client';
+
+const stripeClient = new StripeClient();
+
+// Direct SDK access
+const customer = await stripeClient.stripeSDK.customers.create({
+  email: 'customer@example.com',
+});
+```
+
+### Guidelines
+- Keep clients thin - expose the SDK
+- Use ConfigurationService for credentials
+- Don't wrap every SDK method
+- Error handling done in services
+
+## Services Pattern
+
+### Purpose
+Business logic layer that orchestrates operations.
+
+### Structure
+```typescript
+import { LogService } from './log.service';
+import StripeClient from '../clients/stripe-client';
+
+export class MyService {
+  constructor(
+    private readonly logService: LogService,
+    private readonly stripeClient: StripeClient
+  ) {}
+
+  async performOperation(params: OperationParams): Promise<Result> {
+    this.logService.info('Starting operation', 'MyService', params);
+
+    try {
+      // 1. Fetch data
+      const data = await this.stripeClient.stripeSDK.someMethod();
+
+      // 2. Transform data
+      const transformed = this.transformData(data);
+
+      // 3. Update systems
+      await this.updateSomething(transformed);
+
+      this.logService.info('Operation completed', 'MyService');
+      return result;
+    } catch (error: any) {
+      this.logService.error('Operation failed', 'MyService', { params }, error);
+      throw error;
+    }
+  }
+
+  private transformData(data: any) {
+    // Business logic here
+    return transformed;
+  }
+}
+```
+
+### Available Services
+- **LogService**: Structured JSON logging
+- **ConfigurationService**: Type-safe configuration
+- **RenderService**: HTML generation for dashboard
+- **RootService**: Root Platform operations
+
+### Guidelines
+- Inject all dependencies via constructor
+- Use LogService for all logging
+- Handle errors with context
+- Keep focused (single responsibility)
+- Write unit tests with mocked dependencies
+
+## Adapters Pattern
+
+### Purpose
+Data transformation between Stripe and Root formats.
+
+### Structure
+```typescript
+import Stripe from 'stripe';
+import * as root from '@rootplatform/node-sdk';
+
+export default class StripeToRootAdapter {
+  convertInvoiceToRootPayment(
+    invoice: Stripe.Invoice,
+    params: ConvertInvoiceParams
+  ) {
+    return {
+      status: params.status,
+      failure_reason: params.failureReason || invoice.last_finalization_error?.message,
+      failure_action: params.failureAction || root.FailureAction.BlockRetry,
+    };
+  }
+
+  convertCustomerToAppData(customer: Stripe.Customer) {
+    return {
+      stripe_customer_id: customer.id,
+      stripe_email: customer.email,
+      stripe_default_payment_method: customer.invoice_settings.default_payment_method,
+      stripe_created_at: new Date(customer.created * 1000).toISOString(),
+    };
+  }
+}
+```
+
+### Usage
+```typescript
+const adapter = new StripeToRootAdapter();
+
+// Convert webhook data
+const paymentUpdate = adapter.convertInvoiceToRootPayment(invoice, {
+  status: PaymentStatus.Successful,
+});
+
+// Store customer info
+const appData = adapter.convertCustomerToAppData(customer);
+await rootService.updatePolicyAppData(policyId, appData);
+```
+
+### Guidelines
+- Keep adapters pure (no side effects)
+- Handle null/undefined values gracefully
+- Add comprehensive tests
+- Don't make API calls in adapters
+- Don't add business logic
+
+## Controllers Pattern
+
+### Purpose
+Event processors that orchestrate service calls.
+
+### Structure
+```typescript
+import { LogService } from '../../services/log.service';
+import { RootService } from '../../services/root.service';
+import StripeClient from '../../clients/stripe-client';
+
+export class InvoicePaidController {
+  constructor(
+    private readonly logService: LogService,
+    private readonly rootService: RootService,
+    private readonly stripeClient: StripeClient
+  ) {}
+
+  async handle(invoice: Stripe.Invoice): Promise<void> {
+    this.logService.info('Processing invoice.paid', 'InvoicePaidController', {
+      invoiceId: invoice.id,
+    });
+
+    // 1. Validate input
+    if (!invoice.metadata?.rootPaymentId) {
+      this.logService.warn('No payment ID in invoice', 'InvoicePaidController');
+      return;
+    }
+
+    // 2. Coordinate services
+    await this.rootService.updatePaymentStatus({
+      paymentId: invoice.metadata.rootPaymentId,
+      status: PaymentStatus.Successful,
+    });
+
+    this.logService.info('Invoice processed successfully', 'InvoicePaidController');
+  }
+}
+```
+
+### Guidelines
+- Keep controllers thin (< 100 lines)
+- Inject all dependencies via constructor
+- Use services for business logic
+- Log important steps
+- Handle errors gracefully
+- Return early for validation failures
+
+## Lifecycle Hooks Pattern
+
+### Purpose
+Root Platform callback functions.
+
+### Structure
+```typescript
+import { getLogService } from '../services/log-instance';
+import { RootService } from '../services/root.service';
+import StripeClient from '../clients/stripe-client';
+
+export async function afterPolicyPaymentMethodAssigned({ policy }) {
+  const logService = getLogService();
+  const rootService = new RootService(logService);
+  const stripeClient = new StripeClient();
+
+  logService.info('Payment method assigned', 'afterPolicyPaymentMethodAssigned', {
+    policyId: policy.policy_id,
+  });
+
+  try {
+    // 1. Get payment method
+    const paymentMethod = await rootService.getPolicyPaymentMethod(policy.policy_id);
+    
+    // 2. Process with Stripe
+    const customerId = policy.app_data?.stripe_customer_id;
+    await stripeClient.stripeSDK.paymentMethods.attach(
+      paymentMethod.module.payment_method,
+      { customer: customerId }
+    );
+
+    logService.info('Payment method attached', 'afterPolicyPaymentMethodAssigned');
+  } catch (error: any) {
+    logService.error('Failed to attach payment method', 'afterPolicyPaymentMethodAssigned', {}, error);
+    throw error;
+  }
+}
+```
+
+### Available Hooks
+- **Payment Method**: renderCreatePaymentMethod, createPaymentMethod, renderViewPaymentMethod
+- **Policy**: afterPolicyIssued, afterPolicyPaymentMethodAssigned, afterPolicyUpdated, afterPolicyCancelled
+- **Payment**: afterPaymentCreated, afterPaymentUpdated
+- **Alteration**: afterAlterationPackageApplied
+
+### Guidelines
+- Log hook entry and exit
+- Validate input parameters
+- Handle errors gracefully
+- Use services for business logic
+- Keep hooks thin (orchestration only)
+
+## Dependency Injection Pattern
+
+### Container Registration
+```typescript
+// core/container.setup.ts
+container.register(
+  ServiceToken.MY_SERVICE,
+  (c) => {
+    const logService = c.resolve<LogService>(ServiceToken.LOG_SERVICE);
+    const config = c.resolve<ConfigurationService>(ServiceToken.CONFIG_SERVICE);
+    
+    const { MyService } = require('../services/my.service');
+    return new MyService(logService, config);
+  },
+  ServiceLifetime.SINGLETON
+);
+```
+
+### Service Usage
+```typescript
+import { getContainer } from './core/container.setup';
+import { ServiceToken } from './core/container';
+
+const container = getContainer();
+const myService = container.resolve(ServiceToken.MY_SERVICE);
+await myService.doSomething();
+```
+
+### Service Lifetimes
+- **SINGLETON**: LogService, ConfigService (shared state/expensive to create)
+- **TRANSIENT**: Controllers (per-request instances)
+
+### Guidelines
+- Use ServiceTokens (Symbols) for type safety
+- Register services at startup
+- Inject dependencies via constructor
+- Test with mocked services
+
+## Logging Pattern
+
+### Usage
+```typescript
+import { getLogService } from '../services/log-instance';
+
+const logService = getLogService();
+
+// Basic logging
+logService.info('Operation completed', 'MyService');
+logService.error('Operation failed', 'MyService', {}, error);
+
+// With metadata
+logService.info('Payment created', 'PaymentService', {
+  paymentId: 'payment_123',
+  amount: 10000,
+});
+
+// With correlation ID
+const correlationId = logService.generateCorrelationId();
+logService.info('Processing request', 'WebhookHandler');
+// ... all subsequent logs include this correlation ID
+logService.clearCorrelationId();
+```
+
+### Guidelines
+- Always provide context (service/controller name)
+- Include relevant metadata
+- Use appropriate log levels (DEBUG, INFO, WARN, ERROR)
+- Don't log sensitive data
+
+## Testing Patterns
+
+### Service Testing
+```typescript
+describe('MyService', () => {
+  let service: MyService;
+  let mockLogService: jest.Mocked<LogService>;
+  let mockStripeClient: jest.Mocked<StripeClient>;
+
+  beforeEach(() => {
+    mockLogService = {
+      info: jest.fn(),
+      error: jest.fn(),
+    } as any;
+
+    mockStripeClient = {
+      stripeSDK: {
+        customers: {
+          create: jest.fn().mockResolvedValue({ id: 'cus_123' }),
+        },
+      },
+    } as any;
+
+    service = new MyService(mockLogService, mockStripeClient);
+  });
+
+  it('should perform operation successfully', async () => {
+    const result = await service.performOperation({ id: '123' });
+    
+    expect(result).toBeDefined();
+    expect(mockLogService.info).toHaveBeenCalledWith(
+      'Starting operation',
+      'MyService',
+      { id: '123' }
+    );
+  });
+});
+```
+
+### Controller Testing
+```typescript
+describe('InvoicePaidController', () => {
+  let controller: InvoicePaidController;
+  let mockRootService: jest.Mocked<RootService>;
+
+  beforeEach(() => {
+    mockRootService = {
+      updatePaymentStatus: jest.fn(),
+    } as any;
+
+    controller = new InvoicePaidController(
+      mockLogService,
+      mockRootService,
+      mockStripeClient
+    );
+  });
+
+  it('should update payment status', async () => {
+    const invoice = { id: 'in_123', metadata: { rootPaymentId: 'pay_123' } };
+    
+    await controller.handle(invoice);
+    
+    expect(mockRootService.updatePaymentStatus).toHaveBeenCalledWith({
+      paymentId: 'pay_123',
+      status: PaymentStatus.Successful,
+    });
+  });
+});
+```
+
+## Error Handling Pattern
+
+### In Services
+```typescript
+try {
+  const result = await externalApiCall();
+  return result;
+} catch (error: any) {
+  this.logService.error(
+    'API call failed',
+    'MyService',
+    { params },
+    error
+  );
+  throw error; // Re-throw after logging
+}
+```
+
+### In Controllers
+```typescript
+async handle(event: Event): Promise<void> {
+  try {
+    await this.processEvent(event);
+  } catch (error: any) {
+    this.logService.error('Event processing failed', 'MyController', { event }, error);
+    throw error;
+  }
+}
+```
+
+### In Lifecycle Hooks
+```typescript
+export async function afterPolicyIssued({ policy }) {
+  const logService = getLogService();
+  
+  try {
+    await processPolicyIssued(policy);
+  } catch (error: any) {
+    logService.error('Failed to process policy issued', 'afterPolicyIssued', {}, error);
+    throw error; // Root Platform will handle retry
+  }
+}
+```
+
+## Common Patterns
+
+### Orchestration Pattern (Service)
+```typescript
+async createCustomerAndSubscription(policy: Policy) {
+  // 1. Create customer
+  const customer = await this.stripeClient.stripeSDK.customers.create({
+    email: policy.email,
+  });
+
+  // 2. Attach payment method
+  await this.stripeClient.stripeSDK.paymentMethods.attach(
+    paymentMethodId,
+    { customer: customer.id }
+  );
+
+  // 3. Create subscription
+  const subscription = await this.stripeClient.stripeSDK.subscriptions.create({
+    customer: customer.id,
+    items: [{ price: priceId }],
+  });
+
+  // 4. Update Root
+  await this.rootService.updatePolicyAppData(policy.policy_id, {
+    stripe_customer_id: customer.id,
+    stripe_subscription_id: subscription.id,
+  });
+
+  return { customer, subscription };
+}
+```
+
+### Transformation Pattern (Adapter)
+```typescript
+mapStripeStatusToRoot(stripeStatus: string): PaymentStatus {
+  const mapping = {
+    paid: PaymentStatus.Successful,
+    open: PaymentStatus.Pending,
+    void: PaymentStatus.Cancelled,
+    uncollectible: PaymentStatus.Failed,
+  };
+  return mapping[stripeStatus] || PaymentStatus.Failed;
+}
+```
+
+### Idempotency Pattern (Hook)
+```typescript
+export async function afterPaymentCreated({ policy, payment }) {
+  // Check if already processed
+  const existingPaymentIntent = payment.metadata?.stripe_payment_intent_id;
+  if (existingPaymentIntent) {
+    logService.info('Payment already processed', 'afterPaymentCreated');
+    return;
+  }
+
+  // Process payment
+  const paymentIntent = await createPaymentIntent(payment);
+  
+  // Store reference to prevent re-processing
+  await updatePaymentMetadata(payment.payment_id, {
+    stripe_payment_intent_id: paymentIntent.id,
+  });
+}
+```
+
+## Best Practices Summary
+
+### Do ✅
+- Use dependency injection
+- Log with context and metadata
+- Handle errors gracefully
+- Write tests for all business logic
+- Keep layers separated
+- Use TypeScript types
+- Return early for validation failures
+
+### Don't ❌
+- Put business logic in controllers or hooks
+- Create dependencies with `new` (use DI)
+- Skip error handling
+- Make clients stateful
+- Skip input validation
+- Log sensitive data
+- Mix layer responsibilities
+
+## Quick Reference
+
+### Creating New Features
+1. Create Service (if needed) - `code/services/`
+2. Create Controller (if handling events) - `code/controllers/`
+3. Register in DI Container - `code/core/container.setup.ts`
+4. Wire in Entry Point - `code/webhook-hooks.ts` or `code/lifecycle-hooks/`
+5. Add Tests - `__tests__/`
+
+### File Locations
+- **Services**: `code/services/` - Business logic
+- **Controllers**: `code/controllers/` - Event processors
+- **Clients**: `code/clients/` - API wrappers
+- **Adapters**: `code/adapters/` - Data transformation
+- **Lifecycle Hooks**: `code/lifecycle-hooks/` - Root callbacks
+- **Core/DI**: `code/core/` - Dependency injection
+- **Utils**: `code/utils/` - Reusable helpers
+
+### Common Imports
+```typescript
+// Logging
+import { getLogService } from '../services/log-instance';
+
+// Configuration
+import { getConfigService } from '../services/config-instance';
+
+// Clients
+import StripeClient from '../clients/stripe-client';
+import rootClient from '../clients/root-client';
+
+// Services
+import { RootService } from '../services/root.service';
+import { StripeService } from '../services/stripe.service';
+import { RenderService } from '../services/render.service';
+
+// DI Container
+import { getContainer } from '../core/container.setup';
+import { ServiceToken } from '../core/container';
+
+// Types
+import * as root from '@rootplatform/node-sdk';
+import Stripe from 'stripe';
+```
+
