@@ -59,8 +59,7 @@ Pull requests show status checks:
 - Setup Node.js 18.x
 - Install dependencies
 - Create env.ts from env.sample.ts (for TypeScript compilation)
-- Build TypeScript
-- Verify dist/ created
+- Build TypeScript (type checking only - noEmit: true)
 ```
 
 ## Coverage Requirements
