@@ -94,6 +94,16 @@ export function createContainer(): Container {
     ServiceLifetime.SINGLETON
   );
 
+  // Register RenderService
+  container.register(
+    ServiceToken.RENDER_SERVICE,
+    () => {
+      // eslint-disable-next-line unicorn/prefer-module
+      return new (require('../services/render.service').RenderService)();
+    },
+    ServiceLifetime.SINGLETON
+  );
+
   // Register Controllers here
   // Example:
   // container.register(

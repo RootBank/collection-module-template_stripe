@@ -14,7 +14,6 @@ import * as crypto from 'crypto';
 import { getContainer } from './core/container.setup';
 import { ServiceToken } from './core/container';
 import { LogService } from './services/log.service';
-import { StripeEvents } from './interfaces/stripe-events';
 import { getConfigService } from './services/config-instance';
 
 /**
