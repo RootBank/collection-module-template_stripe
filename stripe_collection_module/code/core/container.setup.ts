@@ -94,42 +94,17 @@ export function createContainer(): Container {
     ServiceLifetime.SINGLETON
   );
 
-  // Register Controllers (Transient - new instance per request)
-  container.register(
-    ServiceToken.INVOICE_PAID_CONTROLLER,
-    (c) => {
-      const logService = c.resolve<LogService>(ServiceToken.LOG_SERVICE);
-      const rootService = c.resolve(ServiceToken.ROOT_SERVICE);
-      const stripeClient = c.resolve(ServiceToken.STRIPE_CLIENT);
-
-      const {
-        InvoicePaidController,
-        // eslint-disable-next-line unicorn/prefer-module
-      } = require('../controllers/stripe-event-processors/invoice-paid.controller');
-      return new InvoicePaidController(logService, rootService, stripeClient);
-    },
-    ServiceLifetime.TRANSIENT
-  );
-
-  container.register(
-    ServiceToken.PAYMENT_CREATION_CONTROLLER,
-    (c) => {
-      const logService = c.resolve<LogService>(ServiceToken.LOG_SERVICE);
-      const rootService = c.resolve(ServiceToken.ROOT_SERVICE);
-      const stripeClient = c.resolve(ServiceToken.STRIPE_CLIENT);
-
-      const {
-        PaymentCreationController,
-        // eslint-disable-next-line unicorn/prefer-module
-      } = require('../controllers/root-event-processors/payment-creation.controller');
-      return new PaymentCreationController(
-        logService,
-        rootService,
-        stripeClient
-      );
-    },
-    ServiceLifetime.TRANSIENT
-  );
+  // Register Controllers here
+  // Example:
+  // container.register(
+  //   ServiceToken.YOUR_CONTROLLER,
+  //   (c) => {
+  //     const logService = c.resolve<LogService>(ServiceToken.LOG_SERVICE);
+  //     const yourService = c.resolve(ServiceToken.YOUR_SERVICE);
+  //     return new YourController(logService, yourService);
+  //   },
+  //   ServiceLifetime.TRANSIENT
+  // );
 
   return container;
 }

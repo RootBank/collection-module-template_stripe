@@ -29,7 +29,7 @@ export class RootService {
     this.logService.debug(`Getting policy: ${policyId}`, 'RootService');
 
     try {
-      const result = await this.rootClient.SDK.getPolicyById({ policyId });
+      const result = await this.rootClient.getPolicyById({ policyId });
       return result;
     } catch (error: any) {
       this.logService.error(
@@ -48,7 +48,7 @@ export class RootService {
     this.logService.info('Updating payment status', 'RootService', params);
 
     try {
-      await this.rootClient.SDK.updatePaymentsAsync({
+      await this.rootClient.updatePaymentsAsync({
         paymentUpdates: [
           {
             payment_id: params.paymentId,

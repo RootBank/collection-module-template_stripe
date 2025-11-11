@@ -47,12 +47,12 @@ describe('Container Setup', () => {
       expect(container.has(ServiceToken.STRIPE_SERVICE)).toBe(true);
     });
 
-    it('should have controllers registered', () => {
-      const container = createContainer();
-      
-      expect(container.has(ServiceToken.INVOICE_PAID_CONTROLLER)).toBe(true);
-      expect(container.has(ServiceToken.PAYMENT_CREATION_CONTROLLER)).toBe(true);
-    });
+    // TODO: Add controller registration tests when controllers are implemented
+    // it('should have controllers registered', () => {
+    //   const container = createContainer();
+    //   
+    //   expect(container.has(ServiceToken.YOUR_CONTROLLER)).toBe(true);
+    // });
   });
 
   describe('getContainer', () => {

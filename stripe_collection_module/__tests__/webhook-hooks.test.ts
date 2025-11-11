@@ -27,21 +27,15 @@ const { getConfigService } = require('../code/services/config-instance');
 describe('Webhook Hooks', () => {
   let mockContainer: any;
   let mockLogService: ReturnType<typeof createMockLogService>;
-  let mockInvoicePaidController: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     mockLogService = createMockLogService();
-    mockInvoicePaidController = {
-      handle: jest.fn().mockResolvedValue(undefined),
-    };
 
     mockContainer = {
       resolve: jest.fn((token: symbol) => {
         if (token === ServiceToken.LOG_SERVICE) return mockLogService;
-        if (token === ServiceToken.INVOICE_PAID_CONTROLLER)
-          return mockInvoicePaidController;
         return null;
       }),
     };
@@ -176,7 +170,7 @@ describe('Webhook Hooks', () => {
     });
 
     describe('Event Routing', () => {
-      it('should route invoice.paid events to InvoicePaidController', async () => {
+      it('should log warning for invoice.paid events (not implemented)', async () => {
         const invoice = {
           id: 'in_test123',
           amount_due: 5000,
@@ -205,12 +199,19 @@ describe('Webhook Hooks', () => {
             eventId: 'evt_test',
           }
         );
-        expect(mockInvoicePaidController.handle).toHaveBeenCalledWith(invoice);
+        expect(mockLogService.info).toHaveBeenCalledWith(
+          'Received unhandled Stripe event',
+          'WebhookHandler',
+          {
+            eventType: StripeEvents.InvoicePaid,
+            eventId: 'evt_test',
+          }
+        );
         expect(result.response.status).toBe(200);
         expect(JSON.parse(result.response.body)).toEqual({ received: true });
       });
 
-      it('should log warning for unhandled event types', async () => {
+      it('should log info for unhandled event types', async () => {
         const event = {
           id: 'evt_test',
           type: 'customer.created',
@@ -220,11 +221,12 @@ describe('Webhook Hooks', () => {
         const request = createWebhookRequest(event);
         const result = await processWebhookRequest(request);
 
-        expect(mockLogService.warn).toHaveBeenCalledWith(
-          'Unhandled Stripe event type',
+        expect(mockLogService.info).toHaveBeenCalledWith(
+          'Received unhandled Stripe event',
           'WebhookHandler',
           {
             eventType: 'customer.created',
+            eventId: 'evt_test',
           }
         );
         expect(result.response.status).toBe(200);
@@ -233,39 +235,6 @@ describe('Webhook Hooks', () => {
     });
 
     describe('Error Handling', () => {
-      it('should handle controller errors gracefully', async () => {
-        mockInvoicePaidController.handle.mockRejectedValue(
-          new Error('Controller processing failed')
-        );
-
-        const event = {
-          id: 'evt_test',
-          type: StripeEvents.InvoicePaid,
-          data: {
-            object: {
-              id: 'in_test',
-              amount_due: 1000,
-              metadata: {},
-            },
-          },
-        };
-
-        const request = createWebhookRequest(event);
-        const result = await processWebhookRequest(request);
-
-        expect(mockLogService.error).toHaveBeenCalledWith(
-          'Error processing webhook',
-          'WebhookHandler',
-          {
-            error: 'Controller processing failed',
-          }
-        );
-        expect(result.response.status).toBe(500);
-        expect(JSON.parse(result.response.body)).toEqual({
-          error: 'Internal server error',
-        });
-      });
-
       it('should handle JSON parsing errors', async () => {
         const request = {
           request: {
@@ -299,29 +268,6 @@ describe('Webhook Hooks', () => {
         expect(result.response.status).toBe(500);
       });
 
-      it('should handle non-Error objects thrown', async () => {
-        mockInvoicePaidController.handle.mockRejectedValue('String error');
-
-        const event = {
-          id: 'evt_test',
-          type: StripeEvents.InvoicePaid,
-          data: {
-            object: {
-              id: 'in_test',
-              amount_due: 1000,
-              metadata: {},
-            },
-          },
-        };
-
-        const request = createWebhookRequest(event);
-        const result = await processWebhookRequest(request);
-
-        expect(result.response.status).toBe(500);
-        expect(JSON.parse(result.response.body)).toEqual({
-          error: 'Internal server error',
-        });
-      });
     });
 
     describe('Response Format', () => {
@@ -365,30 +311,6 @@ describe('Webhook Hooks', () => {
         });
       });
 
-      it('should return proper response headers for errors', async () => {
-        mockInvoicePaidController.handle.mockRejectedValue(new Error('Test'));
-
-        const event = {
-          id: 'evt_test',
-          type: StripeEvents.InvoicePaid,
-          data: {
-            object: {
-              id: 'in_test',
-              amount_due: 1000,
-              metadata: {},
-            },
-          },
-        };
-
-        const request = createWebhookRequest(event);
-        const result = await processWebhookRequest(request);
-
-        expect(result.response).toEqual({
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ error: 'Internal server error' }),
-        });
-      });
     });
 
     describe('Signature Parsing Edge Cases', () => {

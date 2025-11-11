@@ -234,6 +234,22 @@ EOF
   echo -e "${GREEN}✓ Created .root-config.json${NC}"
 else
   echo -e "${GREEN}✓ .root-config.json already configured${NC}"
+  
+  # Load values from existing .root-config.json
+  if command -v jq &> /dev/null; then
+    cm_key=$(jq -r '.collectionModuleKey' .root-config.json)
+    cm_name=$(jq -r '.collectionModuleName' .root-config.json)
+    org_id=$(jq -r '.organizationId' .root-config.json)
+    host=$(jq -r '.host' .root-config.json)
+  else
+    # Fallback to grep/sed if jq not available
+    cm_key=$(grep -o '"collectionModuleKey"[[:space:]]*:[[:space:]]*"[^"]*"' .root-config.json | sed 's/.*"\([^"]*\)"$/\1/')
+    cm_name=$(grep -o '"collectionModuleName"[[:space:]]*:[[:space:]]*"[^"]*"' .root-config.json | sed 's/.*"\([^"]*\)"$/\1/')
+    org_id=$(grep -o '"organizationId"[[:space:]]*:[[:space:]]*"[^"]*"' .root-config.json | sed 's/.*"\([^"]*\)"$/\1/')
+    host=$(grep -o '"host"[[:space:]]*:[[:space:]]*"[^"]*"' .root-config.json | sed 's/.*"\([^"]*\)"$/\1/')
+  fi
+  
+  echo -e "${BLUE}ℹ️  Loaded: CM Key=${cm_key}, Org ID=${org_id}${NC}"
 fi
 
 # Set up .root-auth
@@ -247,6 +263,56 @@ if [ ! -f ".root-auth" ]; then
   echo -e "${BLUE}ℹ️  This file is gitignored for security${NC}"
 else
   echo -e "${GREEN}✓ .root-auth already exists${NC}"
+  # Load API key if we need to create the collection module
+  source .root-auth
+  api_key="$ROOT_API_KEY"
+fi
+echo ""
+
+# ============================================================================
+# Step 4b: Create Collection Module on Root Platform
+# ============================================================================
+echo -e "${YELLOW}🚀 Step 4b: Creating Collection Module on Root Platform...${NC}"
+echo ""
+
+if [ -n "$cm_key" ] && [ -n "$api_key" ]; then
+  echo -e "${BLUE}ℹ️  Attempting to create collection module: ${cm_key}${NC}"
+  echo -e "${BLUE}ℹ️  This is required before you can deploy${NC}"
+  echo ""
+  
+  # Create the collection module on Root Platform
+  CM_CREATE_RESPONSE=$(curl -X POST \
+    -u "${api_key}:" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"key\": \"${cm_key}\",
+      \"name\": \"${cm_name}\",
+      \"key_of_collection_module_to_clone\": \"blank_starter_template\"
+    }" \
+    -w "\nHTTP_STATUS:%{http_code}" \
+    -s \
+    "${host}/v1/apps/${org_id}/insurance/collection-modules")
+  
+  # Extract HTTP status
+  CM_HTTP_STATUS=$(echo "$CM_CREATE_RESPONSE" | grep "HTTP_STATUS:" | cut -d: -f2)
+  CM_RESPONSE_BODY=$(echo "$CM_CREATE_RESPONSE" | sed '/HTTP_STATUS:/d')
+  
+  if [ "$CM_HTTP_STATUS" -ge 200 ] && [ "$CM_HTTP_STATUS" -lt 300 ]; then
+    echo -e "${GREEN}✓ Collection module created successfully on Root Platform${NC}"
+  elif [ "$CM_HTTP_STATUS" -eq 409 ] || echo "$CM_RESPONSE_BODY" | grep -q "already exists"; then
+    echo -e "${YELLOW}⚠️  Collection module already exists (this is OK)${NC}"
+  else
+    echo -e "${YELLOW}⚠️  Could not create collection module (HTTP $CM_HTTP_STATUS)${NC}"
+    echo -e "${BLUE}ℹ️  Response: $CM_RESPONSE_BODY${NC}"
+    echo ""
+    echo -e "${BLUE}ℹ️  You may need to create it manually:${NC}"
+    echo -e "${CYAN}   curl -X POST -u '\$API_KEY:' \\${NC}"
+    echo -e "${CYAN}     -H 'Content-Type: application/json' \\${NC}"
+    echo -e "${CYAN}     -d '{\"key\":\"${cm_key}\",\"name\":\"${cm_name}\",\"key_of_collection_module_to_clone\":\"blank_starter_template\"}' \\${NC}"
+    echo -e "${CYAN}     '${host}/v1/apps/${org_id}/insurance/collection-modules'${NC}"
+  fi
+else
+  echo -e "${YELLOW}⚠️  Skipping collection module creation (missing configuration)${NC}"
 fi
 echo ""
 

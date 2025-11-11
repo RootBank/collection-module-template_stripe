@@ -82,24 +82,15 @@ export function createMockStripeSDK() {
 }
 
 /**
- * Create a mock Root SDK
- * Common structure used across Root tests
+ * Create a mock Root SDK/Client
+ * The RootClient exports the SDK namespace directly, so mock functions should be at the top level
  */
-export function createMockRootSDK() {
+export function createMockRootClient() {
   return {
     getPolicyById: jest.fn(),
     updatePaymentsAsync: jest.fn(),
     getPolicyPaymentMethod: jest.fn(),
     updatePolicy: jest.fn(),
-  };
-}
-
-/**
- * Create a mock RootClient
- */
-export function createMockRootClient() {
-  return {
-    SDK: createMockRootSDK(),
   };
 }
 

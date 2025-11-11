@@ -147,9 +147,6 @@ export const ServiceToken = {
   STRIPE_SERVICE: Symbol('StripeService'),
   RENDER_SERVICE: Symbol('RenderService'),
 
-  // Controllers - Stripe Events
-  INVOICE_PAID_CONTROLLER: Symbol('InvoicePaidController'),
-
-  // Controllers - Root Events
-  PAYMENT_CREATION_CONTROLLER: Symbol('PaymentCreationController'),
+  // Add your controller tokens here:
+  // EXAMPLE_CONTROLLER: Symbol('ExampleController'),
 } as const;

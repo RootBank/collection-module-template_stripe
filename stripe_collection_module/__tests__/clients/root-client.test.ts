@@ -15,17 +15,17 @@ jest.mock('../../code/services/config-instance', () => ({
 import rootClient from '../../code/clients/root-client';
 
 describe('RootClient', () => {
-  it('should export a singleton instance', () => {
+  it('should export the Root SDK namespace', () => {
     expect(rootClient).toBeDefined();
-    expect(rootClient.SDK).toBeDefined();
   });
 
-  it('should have SDK property', () => {
-    expect(rootClient.SDK).toBeTruthy();
+  it('should have getPolicyById function', () => {
+    expect(rootClient.getPolicyById).toBeDefined();
+    expect(typeof rootClient.getPolicyById).toBe('function');
   });
 
-  it('should initialize SDK with configuration', () => {
-    // SDK should be initialized (we can't test internals but can verify it exists)
-    expect(typeof rootClient.SDK).toBe('object');
+  it('should have updatePaymentsAsync function', () => {
+    expect(rootClient.updatePaymentsAsync).toBeDefined();
+    expect(typeof rootClient.updatePaymentsAsync).toBe('function');
   });
 });

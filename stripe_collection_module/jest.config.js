@@ -34,4 +34,8 @@ module.exports = {
   clearMocks: true,
   resetMocks: true,
   restoreMocks: true,
+  
+  // Note: --forceExit flag is added in package.json scripts to suppress exit warnings
+  // Uncomment detectOpenHandles below to debug test leaks if needed
+  // detectOpenHandles: true,
 };

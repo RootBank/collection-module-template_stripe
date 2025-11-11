@@ -559,9 +559,10 @@ print_info "Publishing to: $ENVIRONMENT"
 print_info "API URL: $API_URL"
 
 if [ "$DRY_RUN" = false ]; then
-    # Make the API call
+    # Make the API call with Basic Auth (API key as username, no password)
+    # Root Platform uses the API key as the username with empty password
     RESPONSE=$(curl -X POST \
-        -H "Authorization: Basic ${ROOT_API_KEY}" \
+        -u "${ROOT_API_KEY}:" \
         -w "\nHTTP_STATUS:%{http_code}" \
         -s \
         "$API_URL")
@@ -584,7 +585,7 @@ if [ "$DRY_RUN" = false ]; then
         exit 1
     fi
 else
-    print_info "Would execute: curl -X POST -H 'Authorization: Basic ***' '$API_URL'"
+    print_info "Would execute: curl -X POST -u '<api_key>:' '$API_URL'"
 fi
 
 ###############################################################################

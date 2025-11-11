@@ -11,12 +11,10 @@
  */
 
 import * as crypto from 'crypto';
-import Stripe from 'stripe';
 import { getContainer } from './core/container.setup';
 import { ServiceToken } from './core/container';
 import { LogService } from './services/log.service';
 import { StripeEvents } from './interfaces/stripe-events';
-import { InvoicePaidController } from './controllers/stripe-event-processors/invoice-paid.controller';
 import { getConfigService } from './services/config-instance';
 
 /**
@@ -101,27 +99,30 @@ export const processWebhookRequest = async (request: any) => {
     });
 
     // Route to appropriate controller
+    // TODO: Implement your event handlers here
     switch (event.type) {
-      case StripeEvents.InvoicePaid: {
-        const controller = container.resolve<InvoicePaidController>(
-          ServiceToken.INVOICE_PAID_CONTROLLER
-        );
-        await controller.handle(event.data.object as Stripe.Invoice);
-        break;
-      }
+      // Example: Handle invoice.paid events
+      // case StripeEvents.InvoicePaid: {
+      //   const controller = container.resolve<YourController>(
+      //     ServiceToken.YOUR_CONTROLLER
+      //   );
+      //   await controller.handle(event.data.object);
+      //   break;
+      // }
 
-      // Add more event handlers here as needed
+      // Example: Handle payment_intent.succeeded events
       // case StripeEvents.PaymentIntentSucceeded: {
       //   const controller = container.resolve<PaymentIntentSucceededController>(
       //     ServiceToken.PAYMENT_INTENT_SUCCEEDED_CONTROLLER
       //   );
-      //   await controller.handle(event.data.object as Stripe.PaymentIntent);
+      //   await controller.handle(event.data.object);
       //   break;
       // }
 
       default:
-        logService.warn('Unhandled Stripe event type', 'WebhookHandler', {
+        logService.info('Received unhandled Stripe event', 'WebhookHandler', {
           eventType: event.type,
+          eventId: event.id,
         });
     }
 

@@ -10,12 +10,10 @@ describe('RootService', () => {
   let rootService: RootService;
   let mockLogService: ReturnType<typeof createMockLogService>;
   let mockRootClient: ReturnType<typeof createMockRootClient>;
-  let mockRootSDK: any;
 
   beforeEach(() => {
     mockLogService = createMockLogService();
     mockRootClient = createMockRootClient();
-    mockRootSDK = mockRootClient.SDK;
 
     rootService = new RootService(mockLogService as any, mockRootClient as any);
   });
@@ -46,11 +44,11 @@ describe('RootService', () => {
         created_at: '2024-01-01T00:00:00Z',
       } as any;
 
-      mockRootSDK.getPolicyById.mockResolvedValue(mockPolicy);
+      mockRootClient.getPolicyById.mockResolvedValue(mockPolicy);
 
       const result = await rootService.getPolicy('policy_123');
 
-      expect(mockRootSDK.getPolicyById).toHaveBeenCalledWith({
+      expect(mockRootClient.getPolicyById).toHaveBeenCalledWith({
         policyId: 'policy_123',
       });
       expect(result).toEqual(mockPolicy);
@@ -62,7 +60,7 @@ describe('RootService', () => {
 
     it('should handle errors when getting policy', async () => {
       const error = new Error('Policy not found');
-      mockRootSDK.getPolicyById.mockRejectedValue(error);
+      mockRootClient.getPolicyById.mockRejectedValue(error);
 
       await expect(rootService.getPolicy('policy_123')).rejects.toThrow(
         'Policy not found'
@@ -77,7 +75,7 @@ describe('RootService', () => {
 
     it('should handle network errors when getting policy', async () => {
       const error = new Error('Network timeout');
-      mockRootSDK.getPolicyById.mockRejectedValue(error);
+      mockRootClient.getPolicyById.mockRejectedValue(error);
 
       await expect(rootService.getPolicy('policy_456')).rejects.toThrow(
         'Network timeout'
@@ -92,7 +90,7 @@ describe('RootService', () => {
 
     it('should handle API errors with error codes', async () => {
       const error = new Error('Unauthorized');
-      mockRootSDK.getPolicyById.mockRejectedValue(error);
+      mockRootClient.getPolicyById.mockRejectedValue(error);
 
       await expect(rootService.getPolicy('policy_789')).rejects.toThrow(
         'Unauthorized'
@@ -108,7 +106,7 @@ describe('RootService', () => {
 
   describe('updatePaymentStatus', () => {
     it('should update payment status to successful', async () => {
-      mockRootSDK.updatePaymentsAsync.mockResolvedValue({});
+      mockRootClient.updatePaymentsAsync.mockResolvedValue({});
 
       const params = {
         paymentId: 'payment_123',
@@ -117,7 +115,7 @@ describe('RootService', () => {
 
       await rootService.updatePaymentStatus(params);
 
-      expect(mockRootSDK.updatePaymentsAsync).toHaveBeenCalledWith({
+      expect(mockRootClient.updatePaymentsAsync).toHaveBeenCalledWith({
         paymentUpdates: [
           {
             payment_id: 'payment_123',
@@ -143,7 +141,7 @@ describe('RootService', () => {
     });
 
     it('should update payment status to failed with reason', async () => {
-      mockRootSDK.updatePaymentsAsync.mockResolvedValue({});
+      mockRootClient.updatePaymentsAsync.mockResolvedValue({});
 
       const params = {
         paymentId: 'payment_456',
@@ -154,7 +152,7 @@ describe('RootService', () => {
 
       await rootService.updatePaymentStatus(params);
 
-      expect(mockRootSDK.updatePaymentsAsync).toHaveBeenCalledWith({
+      expect(mockRootClient.updatePaymentsAsync).toHaveBeenCalledWith({
         paymentUpdates: [
           {
             payment_id: 'payment_456',
@@ -172,7 +170,7 @@ describe('RootService', () => {
     });
 
     it('should update payment status to pending', async () => {
-      mockRootSDK.updatePaymentsAsync.mockResolvedValue({});
+      mockRootClient.updatePaymentsAsync.mockResolvedValue({});
 
       const params = {
         paymentId: 'payment_789',
@@ -181,7 +179,7 @@ describe('RootService', () => {
 
       await rootService.updatePaymentStatus(params);
 
-      expect(mockRootSDK.updatePaymentsAsync).toHaveBeenCalledWith({
+      expect(mockRootClient.updatePaymentsAsync).toHaveBeenCalledWith({
         paymentUpdates: [
           {
             payment_id: 'payment_789',
@@ -194,7 +192,7 @@ describe('RootService', () => {
     });
 
     it('should update payment status to refunded', async () => {
-      mockRootSDK.updatePaymentsAsync.mockResolvedValue({});
+      mockRootClient.updatePaymentsAsync.mockResolvedValue({});
 
       const params = {
         paymentId: 'payment_refund',
@@ -203,7 +201,7 @@ describe('RootService', () => {
 
       await rootService.updatePaymentStatus(params);
 
-      expect(mockRootSDK.updatePaymentsAsync).toHaveBeenCalledWith({
+      expect(mockRootClient.updatePaymentsAsync).toHaveBeenCalledWith({
         paymentUpdates: [
           {
             payment_id: 'payment_refund',
@@ -218,7 +216,7 @@ describe('RootService', () => {
 
     it('should handle errors when updating payment status', async () => {
       const error = new Error('API error');
-      mockRootSDK.updatePaymentsAsync.mockRejectedValue(error);
+      mockRootClient.updatePaymentsAsync.mockRejectedValue(error);
 
       const params = {
         paymentId: 'payment_123',
@@ -239,7 +237,7 @@ describe('RootService', () => {
 
     it('should handle validation errors', async () => {
       const error = new Error('Invalid payment ID');
-      mockRootSDK.updatePaymentsAsync.mockRejectedValue(error);
+      mockRootClient.updatePaymentsAsync.mockRejectedValue(error);
 
       const params = {
         paymentId: 'invalid_id',
@@ -260,7 +258,7 @@ describe('RootService', () => {
 
     it('should handle network errors', async () => {
       const error = new Error('Connection timeout');
-      mockRootSDK.updatePaymentsAsync.mockRejectedValue(error);
+      mockRootClient.updatePaymentsAsync.mockRejectedValue(error);
 
       const params = {
         paymentId: 'payment_timeout',
@@ -279,7 +277,7 @@ describe('RootService', () => {
     });
 
     it('should update payment status with all optional parameters', async () => {
-      mockRootSDK.updatePaymentsAsync.mockResolvedValue({});
+      mockRootClient.updatePaymentsAsync.mockResolvedValue({});
 
       const params = {
         paymentId: 'payment_full',
@@ -290,7 +288,7 @@ describe('RootService', () => {
 
       await rootService.updatePaymentStatus(params);
 
-      expect(mockRootSDK.updatePaymentsAsync).toHaveBeenCalledWith({
+      expect(mockRootClient.updatePaymentsAsync).toHaveBeenCalledWith({
         paymentUpdates: [
           {
             payment_id: 'payment_full',
@@ -318,8 +316,8 @@ describe('RootService', () => {
         app_data: { stripe_customer_id: 'cus_123' },
       } as any;
 
-      mockRootSDK.getPolicyById.mockResolvedValue(mockPolicy);
-      mockRootSDK.updatePaymentsAsync.mockResolvedValue({});
+      mockRootClient.getPolicyById.mockResolvedValue(mockPolicy);
+      mockRootClient.updatePaymentsAsync.mockResolvedValue({});
 
       // Get policy
       const policy = await rootService.getPolicy('policy_123');
@@ -336,7 +334,7 @@ describe('RootService', () => {
     });
 
     it('should handle multiple payment status updates', async () => {
-      mockRootSDK.updatePaymentsAsync.mockResolvedValue({});
+      mockRootClient.updatePaymentsAsync.mockResolvedValue({});
 
       await rootService.updatePaymentStatus({
         paymentId: 'payment_1',
@@ -348,17 +346,17 @@ describe('RootService', () => {
         status: root.PaymentStatus.Successful,
       });
 
-      expect(mockRootSDK.updatePaymentsAsync).toHaveBeenCalledTimes(2);
+      expect(mockRootClient.updatePaymentsAsync).toHaveBeenCalledTimes(2);
       expect(mockLogService.info).toHaveBeenCalledTimes(4); // 2 updates * 2 logs each
     });
 
     it('should handle error after successful operation', async () => {
-      mockRootSDK.getPolicyById.mockResolvedValue({
+      mockRootClient.getPolicyById.mockResolvedValue({
         policy_id: 'policy_123',
       } as root.Policy);
 
       const error = new Error('Update failed');
-      mockRootSDK.updatePaymentsAsync.mockRejectedValue(error);
+      mockRootClient.updatePaymentsAsync.mockRejectedValue(error);
 
       await rootService.getPolicy('policy_123');
 
