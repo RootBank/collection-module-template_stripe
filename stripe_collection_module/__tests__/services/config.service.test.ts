@@ -25,13 +25,13 @@ describe('ConfigurationService', () => {
   });
 
   describe('Initialization', () => {
-    it('should initialize with default environment (development)', () => {
+    it('should initialize with default environment (sandbox)', () => {
       delete process.env.ENVIRONMENT;
 
       const config = new ConfigurationService({ skipValidation: true });
 
-      expect(config.getEnvironment()).toBe('development');
-      expect(config.isDevelopment()).toBe(true);
+      expect(config.getEnvironment()).toBe('sandbox');
+      expect(config.isSandbox()).toBe(true);
       expect(config.isProduction()).toBe(false);
     });
 
@@ -42,7 +42,7 @@ describe('ConfigurationService', () => {
 
       expect(config.getEnvironment()).toBe('production');
       expect(config.isProduction()).toBe(true);
-      expect(config.isDevelopment()).toBe(false);
+      expect(config.isSandbox()).toBe(false);
     });
 
     it('should initialize with environment from options', () => {
@@ -56,7 +56,7 @@ describe('ConfigurationService', () => {
     });
 
     it('should prioritize options.environment over process.env.ENVIRONMENT', () => {
-      process.env.ENVIRONMENT = 'development';
+      process.env.ENVIRONMENT = 'sandbox';
 
       const config = new ConfigurationService({
         environment: 'production',
@@ -148,33 +148,33 @@ describe('ConfigurationService', () => {
       expect(config.get('stripeSecretKey')).toContain('sk_live');
     });
 
-    it('should load development configuration', () => {
+    it('should load sandbox configuration', () => {
       const config = new ConfigurationService({
-        environment: 'development',
+        environment: 'sandbox',
         skipValidation: true,
       });
 
-      expect(config.get('environment')).toBe('development');
-      // Development should use TEST keys
+      expect(config.get('environment')).toBe('sandbox');
+      // Sandbox should use TEST keys
       expect(config.get('stripePublishableKey')).toContain('pk_test');
       expect(config.get('stripeSecretKey')).toContain('sk_test');
     });
 
-    it('should have different API keys for production vs development', () => {
+    it('should have different API keys for production vs sandbox', () => {
       const prodConfig = new ConfigurationService({
         environment: 'production',
         skipValidation: true,
       });
-      const devConfig = new ConfigurationService({
-        environment: 'development',
+      const sandboxConfig = new ConfigurationService({
+        environment: 'sandbox',
         skipValidation: true,
       });
 
       expect(prodConfig.get('stripeSecretKey')).not.toBe(
-        devConfig.get('stripeSecretKey'),
+        sandboxConfig.get('stripeSecretKey')
       );
       expect(prodConfig.get('rootApiKey')).not.toBe(
-        devConfig.get('rootApiKey'),
+        sandboxConfig.get('rootApiKey')
       );
     });
   });
@@ -194,8 +194,8 @@ describe('ConfigurationService', () => {
     });
 
     it('should return correct environment name', () => {
-      const devConfig = new ConfigurationService({
-        environment: 'development',
+      const sandboxConfig = new ConfigurationService({
+        environment: 'sandbox',
         skipValidation: true,
       });
       const prodConfig = new ConfigurationService({
@@ -203,7 +203,7 @@ describe('ConfigurationService', () => {
         skipValidation: true,
       });
 
-      expect(devConfig.getEnvironment()).toBe('development');
+      expect(sandboxConfig.getEnvironment()).toBe('sandbox');
       expect(prodConfig.getEnvironment()).toBe('production');
     });
 
@@ -214,17 +214,17 @@ describe('ConfigurationService', () => {
       });
 
       expect(prodConfig.isProduction()).toBe(true);
-      expect(prodConfig.isDevelopment()).toBe(false);
+      expect(prodConfig.isSandbox()).toBe(false);
     });
 
-    it('should correctly identify development environment', () => {
-      const devConfig = new ConfigurationService({
-        environment: 'development',
+    it('should correctly identify sandbox environment', () => {
+      const sandboxConfig = new ConfigurationService({
+        environment: 'sandbox',
         skipValidation: true,
       });
 
-      expect(devConfig.isDevelopment()).toBe(true);
-      expect(devConfig.isProduction()).toBe(false);
+      expect(sandboxConfig.isSandbox()).toBe(true);
+      expect(sandboxConfig.isProduction()).toBe(false);
     });
   });
 
@@ -287,7 +287,7 @@ describe('ConfigurationService', () => {
         fail('Should have thrown an error');
       } catch (error: any) {
         expect(error.message).toContain('production');
-        expect(error.message).toContain('development');
+        expect(error.message).toContain('sandbox');
       }
     });
   });

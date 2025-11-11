@@ -21,7 +21,7 @@ export interface EnvironmentConfig {
 
 export interface ConfigMap {
   production: EnvironmentConfig;
-  development: EnvironmentConfig;
+  sandbox: EnvironmentConfig;
 }
 
 export interface ConfigurationServiceOptions {
@@ -31,7 +31,7 @@ export interface ConfigurationServiceOptions {
 
 export enum Environment {
   PRODUCTION = 'production',
-  DEVELOPMENT = 'development',
+  SANDBOX = 'sandbox',
 }
 
 /**
@@ -51,7 +51,7 @@ export class ConfigurationService {
 
   constructor(options: ConfigurationServiceOptions = {}) {
     this.environment =
-      options.environment || process.env.ENVIRONMENT || Environment.DEVELOPMENT;
+      options.environment || process.env.ENVIRONMENT || Environment.SANDBOX;
     this.configs = this.buildConfigMap();
 
     if (!options.skipValidation) {
@@ -82,9 +82,9 @@ export class ConfigurationService {
       rootBaseUrl: env.ROOT_BASE_URL_LIVE,
     };
 
-    const development: EnvironmentConfig = {
+    const sandbox: EnvironmentConfig = {
       ...baseConfig,
-      environment: Environment.DEVELOPMENT,
+      environment: Environment.SANDBOX,
       stripeWebhookSigningSecret: env.STRIPE_WEBHOOK_SIGNING_SECRET_TEST,
       stripePublishableKey: env.STRIPE_PUBLISHABLE_KEY_TEST,
       stripeSecretKey: env.STRIPE_SECRET_KEY_TEST,
@@ -95,7 +95,7 @@ export class ConfigurationService {
 
     return {
       production,
-      development,
+      sandbox,
     };
   }
 
@@ -105,7 +105,7 @@ export class ConfigurationService {
   private validateEnvironment(): void {
     if (!this.environment) {
       throw new Error(
-        'ENVIRONMENT is not set. Set ENVIRONMENT=production or ENVIRONMENT=development'
+        'ENVIRONMENT is not set. Set ENVIRONMENT=production or ENVIRONMENT=sandbox'
       );
     }
 
@@ -198,10 +198,17 @@ export class ConfigurationService {
   }
 
   /**
-   * Check if running in development
+   * Check if running in sandbox
+   */
+  public isSandbox(): boolean {
+    return this.environment === Environment.SANDBOX.toString();
+  }
+
+  /**
+   * @deprecated Use isSandbox() instead. This method is kept for backwards compatibility.
    */
   public isDevelopment(): boolean {
-    return this.environment === Environment.DEVELOPMENT.toString();
+    return this.isSandbox();
   }
 
   /**

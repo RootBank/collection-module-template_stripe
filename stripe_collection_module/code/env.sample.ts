@@ -2,6 +2,7 @@
  * Environment Configuration Sample
  *
  * Copy this file to env.ts and fill in your actual values.
+ * OR run the setup script: bash ../setup.sh
  *
  * IMPORTANT: Never commit env.ts to version control!
  * The .gitignore file should exclude it.
@@ -10,11 +11,11 @@
 // ============================================================================
 // ENVIRONMENT
 // ============================================================================
-// Set to 'development' for testing or 'production' for live deployment
-export const NODE_ENV = 'development';
+// Set to 'sandbox' for testing or 'production' for live deployment
+export const NODE_ENV = 'sandbox';
 
 // ============================================================================
-// PAYMENT PROVIDER CONFIGURATION (Stripe Example)
+// PAYMENT PROVIDER CONFIGURATION (Stripe)
 // ============================================================================
 
 // Webhook Signing Secrets
@@ -22,7 +23,7 @@ export const NODE_ENV = 'development';
 export const STRIPE_WEBHOOK_SIGNING_SECRET_LIVE = 'whsec_xxxxx';
 export const STRIPE_WEBHOOK_SIGNING_SECRET_TEST = 'whsec_xxxxx';
 
-// Product IDs (if applicable to your provider)
+// Product IDs
 // Get from: Stripe Dashboard → Products
 export const STRIPE_PRODUCT_ID_LIVE = 'prod_xxxxx';
 export const STRIPE_PRODUCT_ID_TEST = 'prod_xxxxx';
@@ -71,9 +72,13 @@ export const TIME_DELAY_IN_MILLISECONDS = '10000';
 // NOTES FOR DEPLOYMENT
 // ============================================================================
 //
+// Setup:
+//   - Run bash ../setup.sh for an interactive configuration wizard
+//   - The script will prompt for all required values with helpful defaults
+//
 // Security:
 //   - Rotate API keys regularly
-//   - Use different keys for test/production
+//   - Use different keys for sandbox/production
 //   - Never commit env.ts to git
 //   - Monitor CloudWatch Logs for suspicious activity
 //

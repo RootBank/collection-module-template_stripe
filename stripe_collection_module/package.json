@@ -1,11 +1,18 @@
 {
+  "name": "stripe-collection-module",
+  "version": "1.0.0",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "dependencies": {
-    "@rootplatform/node-sdk": "^0.0.7",
     "joi": "11.4.0",
     "moment-timezone": "0.5.40",
     "node-fetch": "2.6.7",
     "phone": "2.4.22",
-    "stripe": "^19.2.1"
+    "stripe": "14.5.0",
+    "@rootplatform/node-sdk": "^0.0.4"
   },
   "devDependencies": {
     "@jest/globals": "^30.2.0",
@@ -48,7 +55,8 @@
     "predeploy": "npm run validate && npm run test && npm run build",
     "deploy:sandbox": "bash scripts/deploy.sh sandbox",
     "deploy:production": "bash scripts/deploy.sh production",
-    "deploy:dry-run": "bash scripts/deploy.sh --dry-run"
+    "deploy:dry-run:sandbox": "bash scripts/deploy.sh --dry-run sandbox",
+    "deploy:dry-run:production": "bash scripts/deploy.sh --dry-run production"
   },
   "engines": {
     "npm": ">=8.0.0",

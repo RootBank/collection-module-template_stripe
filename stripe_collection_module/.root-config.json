@@ -1,10 +1,8 @@
 {
-  "collectionModuleKey": "test_cm",
-  "collectionModuleName": "Test CM",
-  "organizationId": "12345",
-  "host": "https://api.rootplatform.com",
-  "settings": {
-    "legacyCodeExecution": false
-  },
+  "collectionModuleKey": "demo_stripe_v2",
+  "collectionModuleName": "Demo Stripe V2",
+  "organizationId": "c598807f-c59e-46ff-a4cb-99860be57a52",
+  "host": "https://sandbox.uk.rootplatform.com",
+  "settings": {},
   "manualTransactions": []
 }

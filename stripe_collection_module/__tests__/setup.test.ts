@@ -8,7 +8,7 @@ describe('Jest Setup', () => {
   });
 
   it('should have test environment variables configured', () => {
-    expect(process.env.ENVIRONMENT).toBe('development');
+    expect(process.env.ENVIRONMENT).toBe('sandbox');
     expect(process.env.NODE_ENV).toBe('test');
     expect(process.env.ROOT_COLLECTION_MODULE_KEY).toBe(
       'test_collection_module',
