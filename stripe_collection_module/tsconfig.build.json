@@ -3,7 +3,8 @@
   "include": ["./code/**/*"],
   "exclude": ["./__tests__/**/*"],
   "compilerOptions": {
-    "skipLibCheck": false,
+    "lib": ["es2022", "dom"],
+    "skipLibCheck": true,
     "noEmit": false,
     "outDir": "./dist",
     "declaration": true,
