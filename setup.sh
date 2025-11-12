@@ -14,8 +14,15 @@ CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
 NC='\033[0m' # No Color
 
-# Required Node version
-REQUIRED_NODE_VERSION="18"
+# Read required Node version from .nvmrc
+NVMRC_PATH="stripe_collection_module/.nvmrc"
+if [ -f "$NVMRC_PATH" ]; then
+  REQUIRED_NODE_VERSION=$(cat "$NVMRC_PATH" | tr -d '\n\r')
+else
+  # Fallback to default if .nvmrc doesn't exist
+  REQUIRED_NODE_VERSION="18"
+  echo -e "${YELLOW}⚠️  .nvmrc not found, using default Node version: ${REQUIRED_NODE_VERSION}${NC}"
+fi
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║  Stripe Collection Module Template - Setup Wizard     ║${NC}"

@@ -526,13 +526,19 @@ fi
 print_info "Using rp CLI to push code..."
 
 if [ "$DRY_RUN" = false ]; then
-    # Run rp push
-    if rp push; then
-        print_success "Code pushed successfully with rp CLI"
-    else
+    # Run rp push and capture output
+    RP_OUTPUT=$(rp push 2>&1)
+    RP_EXIT_CODE=$?
+    
+    echo "$RP_OUTPUT"
+    
+    # Check for errors in output (rp CLI may not always return proper exit codes)
+    if [ $RP_EXIT_CODE -ne 0 ] || echo "$RP_OUTPUT" | grep -qi "error\|failed\|unauthenticated"; then
         print_error "Failed to push code with rp CLI"
         exit 1
     fi
+    
+    print_success "Code pushed successfully with rp CLI"
 else
     print_info "Would execute: rp push"
 fi
