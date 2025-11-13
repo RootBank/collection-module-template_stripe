@@ -288,13 +288,14 @@ if [ -n "$cm_key" ] && [ -n "$api_key" ]; then
   echo ""
   
   # Create the collection module on Root Platform
+  # Note: Not specifying key_of_collection_module_to_clone creates a blank module
+  # This is correct for template setup - code will be deployed via rp push
   CM_CREATE_RESPONSE=$(curl -X POST \
     -u "${api_key}:" \
     -H "Content-Type: application/json" \
     -d "{
       \"key\": \"${cm_key}\",
-      \"name\": \"${cm_name}\",
-      \"key_of_collection_module_to_clone\": \"blank_starter_template\"
+      \"name\": \"${cm_name}\"
     }" \
     -w "\nHTTP_STATUS:%{http_code}" \
     -s \
@@ -315,7 +316,7 @@ if [ -n "$cm_key" ] && [ -n "$api_key" ]; then
     echo -e "${BLUE}ℹ️  You may need to create it manually:${NC}"
     echo -e "${CYAN}   curl -X POST -u '\$API_KEY:' \\${NC}"
     echo -e "${CYAN}     -H 'Content-Type: application/json' \\${NC}"
-    echo -e "${CYAN}     -d '{\"key\":\"${cm_key}\",\"name\":\"${cm_name}\",\"key_of_collection_module_to_clone\":\"blank_starter_template\"}' \\${NC}"
+    echo -e "${CYAN}     -d '{\"key\":\"${cm_key}\",\"name\":\"${cm_name}\"}' \\${NC}"
     echo -e "${CYAN}     '${host}/v1/apps/${org_id}/insurance/collection-modules'${NC}"
   fi
 else
