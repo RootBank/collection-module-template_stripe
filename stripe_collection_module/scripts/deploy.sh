@@ -13,9 +13,10 @@
 #   ./scripts/deploy.sh [environment] [version]
 #
 # Examples:
-#   ./scripts/deploy.sh sandbox          # Deploy to sandbox
-#   ./scripts/deploy.sh sandbox v1.0.0   # Deploy to sandbox with tag
-#   ./scripts/deploy.sh production v1.0.0  # Deploy to production with tag
+#   ./scripts/deploy.sh sandbox          # Deploy to sandbox (uses package.json version)
+#   ./scripts/deploy.sh sandbox v1.0.0   # Deploy to sandbox with specific version
+#   ./scripts/deploy.sh production       # Deploy to production (uses package.json version)
+#   ./scripts/deploy.sh production v1.0.0  # Deploy to production with specific version
 #
 # Prerequisites:
 #   - Run bash ../setup.sh to configure required files
@@ -117,6 +118,30 @@ load_env_config() {
     fi
 }
 
+load_package_version() {
+    local package_file="$PROJECT_DIR/package.json"
+    
+    if [ ! -f "$package_file" ]; then
+        print_error "package.json not found at $package_file"
+        exit 1
+    fi
+    
+    # Check if jq is available for JSON parsing
+    if command -v jq &> /dev/null; then
+        PACKAGE_VERSION=$(jq -r '.version // empty' "$package_file")
+    else
+        # Fallback to grep/sed if jq is not available
+        PACKAGE_VERSION=$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' "$package_file" | sed 's/.*"\([^"]*\)"$/\1/')
+    fi
+    
+    if [ -n "$PACKAGE_VERSION" ]; then
+        # Ensure version has 'v' prefix
+        if [[ ! "$PACKAGE_VERSION" =~ ^v ]]; then
+            PACKAGE_VERSION="v${PACKAGE_VERSION}"
+        fi
+    fi
+}
+
 ###############################################################################
 # Helper Functions
 ###############################################################################
@@ -161,7 +186,7 @@ Configuration:
 
 Arguments:
     environment     Target environment: 'sandbox' or 'production'
-    version         Git tag version (e.g., v1.0.0) - optional for sandbox
+    version         Git tag version (e.g., v1.0.0) - optional, defaults to package.json version
 
 Options:
     -k, --api-key KEY       Override Root Platform API key (from .root-auth)
@@ -175,20 +200,23 @@ Options:
     --help                  Show this help message
 
 Examples:
-    # Deploy to sandbox (using config files)
+    # Deploy to sandbox (uses package.json version)
     $0 sandbox
 
-    # Deploy to sandbox with version tag
+    # Deploy to sandbox with specific version tag
     $0 sandbox v1.0.0
 
-    # Deploy to production
+    # Deploy to production (uses package.json version)
+    $0 production
+
+    # Deploy to production with specific version
     $0 production v1.1.0
 
     # Deploy with overridden API key
     $0 -k "prod_key_123" production v1.1.0
 
     # Dry run for production
-    $0 --dry-run production v1.0.0
+    $0 --dry-run production
 
 Configuration Files:
     .root-config.json      Organization ID, Module Key, API Host
@@ -277,6 +305,15 @@ fi
 # Load environment configuration from env.ts
 load_env_config
 
+# Load version from package.json if not provided
+if [ -z "$VERSION" ]; then
+    load_package_version
+    if [ -n "$PACKAGE_VERSION" ]; then
+        VERSION="$PACKAGE_VERSION"
+        print_info "Using version from package.json: $VERSION"
+    fi
+fi
+
 echo ""
 
 ###############################################################################
@@ -296,7 +333,7 @@ fi
 
 if [ "$ENVIRONMENT" = "production" ] && [ -z "$VERSION" ]; then
     print_error "Version is required for production deployment"
-    print_info "Usage: $0 production v1.0.0"
+    print_info "Update package.json version and run the script again"
     exit 1
 fi
 

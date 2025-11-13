@@ -154,6 +154,10 @@ After publishing, verify your deployment:
 Deploy to sandbox for testing:
 
 ```bash
+npm run deploy:sandbox
+```
+
+```bash
 curl -X POST \
   -H "Authorization: Basic {{sandbox_api_key}}" \
   "{{host}}/v1/apps/{{org_id}}/insurance/collection-modules/{{cm_key}}/publish?bumpSandbox=true"
@@ -168,6 +172,10 @@ curl -X POST \
 ### Production Deployment
 
 Deploy to production after thorough testing:
+
+```bash
+npm run deploy:production
+```
 
 ```bash
 curl -X POST \
