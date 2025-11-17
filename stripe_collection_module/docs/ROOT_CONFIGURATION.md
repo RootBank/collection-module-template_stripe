@@ -323,5 +323,3 @@ If you encounter issues with Root Platform configuration:
 2. Verify your API key in Root Platform dashboard
 3. Review Root Platform logs for errors
 4. Contact your Root Platform representative
-
-

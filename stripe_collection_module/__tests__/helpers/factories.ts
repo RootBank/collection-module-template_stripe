@@ -9,7 +9,7 @@ import Stripe from 'stripe';
  * Create a mock Stripe customer
  */
 export const createMockStripeCustomer = (
-  overrides?: Partial<Stripe.Customer>,
+  overrides?: Partial<Stripe.Customer>
 ): Stripe.Customer => {
   return {
     id: 'cus_test_123',
@@ -28,7 +28,7 @@ export const createMockStripeCustomer = (
  * Create a mock Stripe payment method
  */
 export const createMockStripePaymentMethod = (
-  overrides?: Partial<Stripe.PaymentMethod>,
+  overrides?: Partial<Stripe.PaymentMethod>
 ): Stripe.PaymentMethod => {
   return {
     id: 'pm_test_123',
@@ -65,7 +65,7 @@ export const createMockStripePaymentMethod = (
  * Create a mock Stripe subscription
  */
 export const createMockStripeSubscription = (
-  overrides?: Partial<Stripe.Subscription>,
+  overrides?: Partial<Stripe.Subscription>
 ): Stripe.Subscription => {
   return {
     id: 'sub_test_123',
@@ -90,7 +90,7 @@ export const createMockStripeSubscription = (
  * Create a mock Stripe invoice
  */
 export const createMockStripeInvoice = (
-  overrides?: Partial<Stripe.Invoice>,
+  overrides?: Partial<Stripe.Invoice>
 ): Stripe.Invoice => {
   return {
     id: 'in_test_123',
@@ -169,7 +169,3 @@ export const createMockRootPayment = (overrides?: any): any => {
     ...overrides,
   };
 };
-
-
-
-

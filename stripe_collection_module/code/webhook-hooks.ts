@@ -15,6 +15,7 @@ import { getContainer } from './core/container.setup';
 import { ServiceToken } from './core/container';
 import { LogService } from './services/log.service';
 import { getConfigService } from './services/config-instance';
+import { StripeEvents } from './interfaces/stripe-events';
 
 /**
  * Verify Stripe webhook signature
@@ -100,6 +101,15 @@ export const processWebhookRequest = async (request: any) => {
     // Route to appropriate controller
     // TODO: Implement your event handlers here
     switch (event.type) {
+      // Handle setup intent succeeded - notify frontend
+      case StripeEvents.SetupIntentSucceeded: {
+        logService.info('Setup intent succeeded', 'WebhookHandler', {
+          setupIntentId: event.data.object.id,
+          paymentMethod: event.data.object.payment_method,
+        });
+        break;
+      }
+
       // Example: Handle invoice.paid events
       // case StripeEvents.InvoicePaid: {
       //   const controller = container.resolve<YourController>(

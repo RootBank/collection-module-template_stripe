@@ -7,12 +7,12 @@
     "dist/**/*"
   ],
   "dependencies": {
-    "@rootplatform/node-sdk": "^0.0.7",
     "joi": "^17.13.3",
     "moment-timezone": "0.5.40",
     "node-fetch": "2.6.7",
     "phone": "2.4.22",
-    "stripe": "^19.2.1"
+    "stripe": "^19.2.1",
+    "@rootplatform/node-sdk": "^0.0.7"
   },
   "devDependencies": {
     "@jest/globals": "^30.2.0",

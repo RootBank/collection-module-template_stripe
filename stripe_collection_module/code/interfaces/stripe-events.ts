@@ -26,6 +26,11 @@ export const StripeEvents = {
   PaymentIntentSucceeded: 'payment_intent.succeeded',
   PaymentIntentFailed: 'payment_intent.payment_failed',
   PaymentIntentCanceled: 'payment_intent.canceled',
+
+  // Setup Intent events
+  SetupIntentSucceeded: 'setup_intent.succeeded',
+  SetupIntentFailed: 'setup_intent.setup_attempt.failed',
+  SetupIntentCanceled: 'setup_intent.canceled',
 } as const;
 
 // Type for the event names

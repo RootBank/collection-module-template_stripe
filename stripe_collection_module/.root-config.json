@@ -1,8 +1,8 @@
 {
-  "collectionModuleKey": "demo_stripe_v2",
+  "collectionModuleKey": "demo_stripe_v3",
   "collectionModuleName": "Demo Stripe V2",
-  "organizationId": "c598807f-c59e-46ff-a4cb-99860be57a52",
-  "host": "https://sandbox.uk.rootplatform.com",
+  "organizationId": "00000000-0000-0000-0000-000000000001",
+  "host": "http://localhost:4000",
   "settings": {},
   "manualTransactions": []
 }
