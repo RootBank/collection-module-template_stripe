@@ -1,0 +1,14 @@
+# Collection Module Template Project Rules
+
+## Architecture Context
+
+For every conversation about code architecture, building features, or refactoring, load the Collection Module architecture patterns: 
+
+stripe_collection_module/.cursor/mcps/collection-module.mcp
+
+This file contains the architectural patterns for:
+- Services, Controllers, Clients, and Adapters
+- Dependency Injection patterns
+- Logging patterns
+- Testing patterns
+- Error handling patterns

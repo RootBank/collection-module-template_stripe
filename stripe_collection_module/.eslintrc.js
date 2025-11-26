@@ -188,6 +188,7 @@ module.exports = {
     es2020: true,
     node: true,
     mocha: true,
+    jest: true,
   },
   extends: [
     'eslint:recommended',
@@ -224,6 +225,12 @@ module.exports = {
   },
   ignorePatterns: ['node_modules*/'],
   overrides: [
+    {
+      files: ['__tests__/**/*', '**/*.test.ts', '**/*.spec.ts'],
+      env: {
+        jest: true,
+      },
+    },
     {
       files: ['./**/*.js'],
       rules: {

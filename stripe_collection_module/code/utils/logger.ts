@@ -1,4 +1,4 @@
-import Config from '../config';
+import { getConfigService } from '../services/config-instance';
 
 enum LogLevel {
   DEBUG = 'debug',
@@ -11,7 +11,7 @@ export default class Logger {
   private static logMessage(
     logLevel: LogLevel,
     message: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, any>
   ): void {
     const metadataString = JSON.stringify(metadata);
     // We're just using this to get the caller function name. No other way to do it in TS due to strict mode.
@@ -19,8 +19,11 @@ export default class Logger {
       ?.split('\n')[2]
       .trim()
       .split(' ')[1];
+    const config = getConfigService();
     console[logLevel](
-      `[${Config.env.environment.toUpperCase()} | ${caller}] ${message} ${metadataString}`,
+      `[${config
+        .get('environment')
+        .toUpperCase()} | ${caller}] ${message} ${metadataString}`
     );
   }
 

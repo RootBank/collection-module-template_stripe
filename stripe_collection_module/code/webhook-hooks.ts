@@ -1,214 +1,158 @@
-import ProcessInvoiceCreatedEventController from './controllers/stripe-event-processors/processInvoiceCreatedEventController';
-import ProcessInvoicePaidEventController from './controllers/stripe-event-processors/processInvoicePaidEventController';
+/**
+ * Webhook Handler for Stripe Events
+ *
+ * This module handles incoming webhook requests from Stripe.
+ * It verifies signatures and routes events to appropriate controllers.
+ *
+ * Architecture:
+ * - Signature verification
+ * - Event routing via dependency injection
+ * - Minimal logic - delegates to controllers
+ */
+
 import * as crypto from 'crypto';
-import { StripeEvents } from './interfaces';
+import { getContainer } from './core/container.setup';
+import { ServiceToken } from './core/container';
+import { LogService } from './services/log.service';
+import { getConfigService } from './services/config-instance';
+import { StripeEvents } from './interfaces/stripe-events';
 
-import {
-  getPolicyIdFromStripeEvent,
-  isPolicyPaymentMethodLinkedToCollectionModule,
-} from './utils';
-import ProcessInvoicePaymentFailedEventController from './controllers/stripe-event-processors/processInvoicePaymentFailedEventController';
-import ProcessSubscriptionScheduleUpdatedEventController from './controllers/stripe-event-processors/processSubscriptionScheduleUpdatedEventController';
-import ProcessInvoiceMarkedUncollectableEventController from './controllers/stripe-event-processors/processInvoiceMarkedUncollectableEventController';
-import ProcessPaymentIntentSucceededEventController from './controllers/stripe-event-processors/processPaymentIntentSucceededEventController';
-import ProcessInvoiceChargeRefundedEventController from './controllers/stripe-event-processors/processInvoiceChargeRefundedEventController';
-import Stripe from 'stripe';
-import Config from './config';
-import Logger from './utils/logger';
-import ModuleError from './utils/error';
+/**
+ * Verify Stripe webhook signature
+ */
+const verifyWebhookSignature = (request: any): boolean => {
+  const { headers, body } = request.request;
+  const stripeSignature: string = headers['stripe-signature'];
 
-const authWebhookRequest = async (request: any) => {
-  // https://stripe.com/docs/webhooks/signatures#verify-manually
-  const { headers } = request.request;
-  const signature: any = { t: undefined, v1: undefined };
-  headers['stripe-signature'].split(',').map((rawElement: any) => {
+  if (!stripeSignature) {
+    return false;
+  }
+
+  // Parse signature header: t=timestamp,v1=signature
+  const signature: { t?: string; v1?: string } = {
+    t: undefined,
+    v1: undefined,
+  };
+  const elements = stripeSignature.split(',');
+
+  for (const rawElement of elements) {
     const [prefix, value] = rawElement.split('=');
-    if (['t', 'v1'].includes(prefix)) {
+    if (prefix === 't' || prefix === 'v1') {
       signature[prefix] = value;
     }
-  });
+  }
 
-  const { body } = request.request;
+  if (!signature.t || !signature.v1) {
+    return false;
+  }
 
+  // Verify signature
+  const config = getConfigService();
+  const webhookSecret = config.get('stripeWebhookSigningSecret');
   const signedPayload = `${signature.t}.${body.toString('utf8')}`;
-
   const expectedSignature = crypto
-    .createHmac('sha256', Config.env.stripeWebhookSigningSecret)
+    .createHmac('sha256', webhookSecret)
     .update(signedPayload)
     .digest('hex');
 
-  // Compare the expected signature with the received signature
-  const signatureVerified = crypto.timingSafeEqual(
-    Buffer.from(signature.v1, 'hex'),
-    Buffer.from(expectedSignature, 'hex'),
-  );
-
-  if (!signatureVerified) {
-    return {
-      response: {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      },
-    };
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(signature.v1, 'hex') as unknown as Uint8Array,
+      Buffer.from(expectedSignature, 'hex') as unknown as Uint8Array
+    );
+  } catch (error) {
+    return false;
   }
 };
 
 /**
- * @typedef {Object} Request
- * @property {string | null} body - The incoming request's body
- * @property {Record<string, any>} headers - An object containing the incoming request's body
- * @property {string} method - The HTTP method used to make to incoming request (e.g. "POST")
- */
-
-/**
- * @typedef {Object} Response
- * @property {number} status - The response status code (valid range is 200 to 599)
- * @property {string} body - The response body
- */
-
-/**
- * @typedef {Object} ProcessWebhookRequestResult
- * @property {Response} response - The response object
- */
-
-/**
- * Process incoming webhook request.
+ * Process incoming Stripe webhook request
  *
- * @param {Request} request
- * @returns {ProcessWebhookRequestResult}
+ * @param request - Incoming webhook request from Stripe
+ * @returns Response object
  */
 export const processWebhookRequest = async (request: any) => {
-  const authResult = await authWebhookRequest(request);
-  if (authResult) {
-    return authResult;
-  }
-
-  const parsedBody = JSON.parse(request.request.body);
-  // When handling a new Stripe event, please check getPolicyIdFromStripeEvent
-  // So the event data can be handled in that function too
-  const policyId = await getPolicyIdFromStripeEvent(parsedBody);
-  Logger.info(`policyId from stripe event: ${policyId}`);
-
-  if (!policyId) {
-    Logger.info('No policyId found in the event', {
-      event: parsedBody,
-    });
-
-    return {
-      response: {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      },
-    };
-  }
-
-  Logger.info(`Processing stripe event of type: ${parsedBody.type}`, {
-    policyId,
-    event: parsedBody,
-  });
-
-  const assignedToCollectionModule =
-    await isPolicyPaymentMethodLinkedToCollectionModule(policyId);
-
-  if (!assignedToCollectionModule) {
-    Logger.debug(
-      `Ignoring this request as this policy payment method has not been assigned a collection module - policyId: ${policyId}`,
-    );
-
-    return {
-      response: {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      },
-    };
-  }
-
-  Logger.debug(`Processing stripe event of type: ${parsedBody.type}`, {
-    policyId,
-    event: parsedBody,
-  });
+  const container = getContainer();
+  const logService = container.resolve<LogService>(ServiceToken.LOG_SERVICE);
 
   try {
-    const payload = parsedBody.data.object;
+    // Verify webhook signature
+    if (!verifyWebhookSignature(request)) {
+      logService.warn(
+        'Webhook signature verification failed',
+        'WebhookHandler'
+      );
+      return {
+        response: {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ error: 'Invalid signature' }),
+        },
+      };
+    }
 
-    /**
-     * Add / remove the Stripe event types that you want to handle in the switch statement below.
-     */
-    switch (parsedBody.type) {
-      case StripeEvents.InvoiceCreated: {
-        await new ProcessInvoiceCreatedEventController().process(
-          payload as Stripe.Invoice,
-        );
+    // Parse webhook event
+    const event = JSON.parse(request.request.body as string);
+    logService.info('Received Stripe webhook', 'WebhookHandler', {
+      eventType: event.type,
+      eventId: event.id,
+    });
+
+    // Route to appropriate controller
+    // TODO: Implement your event handlers here
+    switch (event.type) {
+      // Handle setup intent succeeded - notify frontend
+      case StripeEvents.SetupIntentSucceeded: {
+        logService.info('Setup intent succeeded', 'WebhookHandler', {
+          setupIntentId: event.data.object.id,
+          paymentMethod: event.data.object.payment_method,
+        });
         break;
       }
 
-      case StripeEvents.InvoicePaid: {
-        await new ProcessInvoicePaidEventController().process(
-          payload as Stripe.Invoice,
-        );
-        break;
-      }
+      // Example: Handle invoice.paid events
+      // case StripeEvents.InvoicePaid: {
+      //   const controller = container.resolve<YourController>(
+      //     ServiceToken.YOUR_CONTROLLER
+      //   );
+      //   await controller.handle(event.data.object);
+      //   break;
+      // }
 
-      case StripeEvents.InvoicePaymentFailed: {
-        await new ProcessInvoicePaymentFailedEventController().process(
-          payload as Stripe.Invoice,
-        );
-        break;
-      }
-
-      case StripeEvents.SubscriptionScheduleUpdated: {
-        await new ProcessSubscriptionScheduleUpdatedEventController().process(
-          payload as Stripe.SubscriptionSchedule,
-        );
-        break;
-      }
-
-      case StripeEvents.InvoiceVoided:
-      case StripeEvents.InvoiceMarkedUncollectible: {
-        await new ProcessInvoiceMarkedUncollectableEventController().process(
-          payload as Stripe.Invoice,
-        );
-        break;
-      }
-
-      case StripeEvents.ChargeRefunded: {
-        await new ProcessInvoiceChargeRefundedEventController().process(
-          payload as Stripe.Charge,
-        );
-        break;
-      }
-
-      case StripeEvents.PaymentIntentSucceeded: {
-        await new ProcessPaymentIntentSucceededEventController().process(
-          payload as Stripe.PaymentIntent,
-        );
-        break;
-      }
+      // Example: Handle payment_intent.succeeded events
+      // case StripeEvents.PaymentIntentSucceeded: {
+      //   const controller = container.resolve<PaymentIntentSucceededController>(
+      //     ServiceToken.PAYMENT_INTENT_SUCCEEDED_CONTROLLER
+      //   );
+      //   await controller.handle(event.data.object);
+      //   break;
+      // }
 
       default:
-        // Unexpected event type
-        throw new ModuleError(
-          `Collection module does not handle event type '${parsedBody.type}'.`,
-        );
+        logService.info('Received unhandled Stripe event', 'WebhookHandler', {
+          eventType: event.type,
+          eventId: event.id,
+        });
     }
 
     return {
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ received: true }),
       },
     };
-  } catch (error) {
-    throw new ModuleError(
-      `Error processing stripe event of type: ${parsedBody.type}`,
-      {
-        error,
-        event: parsedBody,
+  } catch (error: any) {
+    logService.error('Error processing webhook', 'WebhookHandler', {
+      error: error.message,
+    });
+
+    return {
+      response: {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Internal server error' }),
       },
-    );
+    };
   }
 };

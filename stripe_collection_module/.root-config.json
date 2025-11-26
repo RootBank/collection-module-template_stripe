@@ -1,10 +1,8 @@
 {
-  "collectionModuleKey": "my_collection_module_cm_stripe",
-  "collectionModuleName": "Stripe Collection Module",
+  "collectionModuleKey": "demo_stripe_v3",
+  "collectionModuleName": "Demo Stripe V2",
   "organizationId": "00000000-0000-0000-0000-000000000001",
   "host": "http://localhost:4000",
-  "settings": {
-    "legacyCodeExecution": false
-  },
+  "settings": {},
   "manualTransactions": []
 }
