@@ -20,7 +20,7 @@ import { ConfigurationService } from './config.service';
  * import { getConfigService } from './services/config-instance';
  *
  * const config = getConfigService();
- * const apiKey = config.get('stripeSecretKey');
+ * const apiKey = config.get('providerSecretKey');
  * ```
  */
 export function getConfigService(): ConfigurationService {

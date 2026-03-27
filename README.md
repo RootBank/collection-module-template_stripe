@@ -27,7 +27,7 @@ This will automatically:
 ### Manual Setup
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 npm install
 cp code/env.sample.ts code/env.ts
 # Edit code/env.ts with your Stripe API keys
@@ -37,7 +37,7 @@ npm test
 
 ### Start Implementing
 
-See [docs/CUSTOMIZING.md](./stripe_collection_module/docs/CUSTOMIZING.md) to implement Stripe integration.
+See [docs/CUSTOMIZING.md](./collection_module/docs/CUSTOMIZING.md) to implement Stripe integration.
 
 ---
 
@@ -61,21 +61,21 @@ This template provides:
 ### Getting Started
 
 - **[Getting Started](./SETUP.md)** - Complete walkthrough for new users
-- **[Setup Guide](./stripe_collection_module/docs/SETUP.md)** - Detailed setup reference
-- **[Root Configuration](./stripe_collection_module/docs/ROOT_CONFIGURATION.md)** - Root Platform config files
-- **[Implementation Guide](./stripe_collection_module/docs/CUSTOMIZING.md)** - Stripe implementation guide
+- **[Setup Guide](./collection_module/docs/SETUP.md)** - Detailed setup reference
+- **[Root Configuration](./collection_module/docs/ROOT_CONFIGURATION.md)** - Root Platform config files
+- **[Implementation Guide](./collection_module/docs/CUSTOMIZING.md)** - Stripe implementation guide
 
 ### Development
 
-- **[Architecture](./stripe_collection_module/docs/ARCHITECTURE.md)** - System design and patterns
-- **[Testing Guide](./stripe_collection_module/docs/TESTING.md)** - Writing and running tests
-- **[Best Practices](./stripe_collection_module/docs/BEST_PRACTICES.md)** - Production patterns
+- **[Architecture](./collection_module/docs/ARCHITECTURE.md)** - System design and patterns
+- **[Testing Guide](./collection_module/docs/TESTING.md)** - Writing and running tests
+- **[Best Practices](./collection_module/docs/BEST_PRACTICES.md)** - Production patterns
 
 ### Deployment
 
-- **[Deployment Guide](./stripe_collection_module/docs/DEPLOYMENT.md)** - Root Platform deployment
-- **[Webhooks Setup](./stripe_collection_module/docs/WEBHOOKS.md)** - Webhook configuration
-- **[Log Viewing](./stripe_collection_module/docs/LOG_VIEWING.md)** - Root Platform log access
+- **[Deployment Guide](./collection_module/docs/DEPLOYMENT.md)** - Root Platform deployment
+- **[Webhooks Setup](./collection_module/docs/WEBHOOKS.md)** - Webhook configuration
+- **[Log Viewing](./collection_module/docs/LOG_VIEWING.md)** - Root Platform log access
 
 ---
 
@@ -108,7 +108,7 @@ Stripe → Root Platform → Stripe Collection Module → Root API
 ### Project Structure
 
 ```
-stripe_collection_module/
+collection_module/
 ├── code/
 │   ├── core/                # DI container & domain models
 │   ├── services/            # Business logic
@@ -139,20 +139,20 @@ stripe_collection_module/
 | `ROOT_BASE_URL_LIVE` | Root API URL | `https://api.rootplatform.com/v1/insurance` |
 | `ROOT_COLLECTION_MODULE_KEY` | Module identifier | `cm_stripe` |
 
-See `stripe_collection_module/code/env.sample.ts` for complete configuration template.
+See `collection_module/code/env.sample.ts` for complete configuration template.
 
 ### Configuration Files
 
-- `stripe_collection_module/code/env.ts` - Environment variables (gitignored)
-- `stripe_collection_module/.root-config.json` - Root module config
-- `stripe_collection_module/package.json` - Dependencies and scripts
+- `collection_module/code/env.ts` - Environment variables (gitignored)
+- `collection_module/.root-config.json` - Root module config
+- `collection_module/package.json` - Dependencies and scripts
 
 ---
 
 ## 🧪 Testing
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 
 # Run all tests
 npm test
@@ -167,7 +167,7 @@ npm run test:coverage
 npm run validate
 ```
 
-See [docs/TESTING.md](./stripe_collection_module/docs/TESTING.md) for testing guide.
+See [docs/TESTING.md](./collection_module/docs/TESTING.md) for testing guide.
 
 ---
 
@@ -179,7 +179,7 @@ Deployment is handled through the Root Platform API:
 
 ```bash
 # Prepare for deployment
-cd stripe_collection_module
+cd collection_module
 npm run validate
 npm test
 npm run build
@@ -199,7 +199,7 @@ curl -X POST \
   "{{host}}/v1/apps/{{org_id}}/insurance/collection-modules/{{cm_key}}/publish?bumpSandbox=false"
 ```
 
-See [docs/DEPLOYMENT.md](./stripe_collection_module/docs/DEPLOYMENT.md) for detailed deployment guide.
+See [docs/DEPLOYMENT.md](./collection_module/docs/DEPLOYMENT.md) for detailed deployment guide.
 
 ### Environment-Specific Deployment
 
@@ -268,7 +268,7 @@ All webhooks must:
 3. Log processing attempts
 4. Handle duplicate events (idempotency)
 
-See [docs/WEBHOOKS.md](./stripe_collection_module/docs/WEBHOOKS.md) for implementation details.
+See [docs/WEBHOOKS.md](./collection_module/docs/WEBHOOKS.md) for implementation details.
 
 ---
 
@@ -285,7 +285,7 @@ This template provides a complete structure for Stripe integration with stub imp
 5. **Add Validation** - Implement input validation with Joi
 6. **Write Tests** - Add comprehensive test coverage
 
-See [docs/CUSTOMIZING.md](./stripe_collection_module/docs/CUSTOMIZING.md) for detailed implementation guide.
+See [docs/CUSTOMIZING.md](./collection_module/docs/CUSTOMIZING.md) for detailed implementation guide.
 
 ### Included Patterns
 
@@ -433,7 +433,7 @@ Review the LICENSE file for usage terms.
 
 ### Documentation
 
-All documentation is in `stripe_collection_module/docs/`:
+All documentation is in `collection_module/docs/`:
 - Setup and configuration
 - Customization guide
 - Deployment instructions
@@ -443,7 +443,7 @@ All documentation is in `stripe_collection_module/docs/`:
 
 ### Getting Help
 
-1. Check the [documentation](./stripe_collection_module/docs/)
+1. Check the [documentation](./collection_module/docs/)
 2. Review [troubleshooting](#troubleshooting) section
 3. Check Root Platform logs for errors
 4. Review Stripe documentation
@@ -454,9 +454,9 @@ All documentation is in `stripe_collection_module/docs/`:
 
 After setup:
 
-1. **Implement** - Complete Stripe service implementations ([docs/CUSTOMIZING.md](./stripe_collection_module/docs/CUSTOMIZING.md))
-2. **Test** - Write comprehensive tests ([docs/TESTING.md](./stripe_collection_module/docs/TESTING.md))
-3. **Deploy** - Publish to Root Platform ([docs/DEPLOYMENT.md](./stripe_collection_module/docs/DEPLOYMENT.md))
+1. **Implement** - Complete Stripe service implementations ([docs/CUSTOMIZING.md](./collection_module/docs/CUSTOMIZING.md))
+2. **Test** - Write comprehensive tests ([docs/TESTING.md](./collection_module/docs/TESTING.md))
+3. **Deploy** - Publish to Root Platform ([docs/DEPLOYMENT.md](./collection_module/docs/DEPLOYMENT.md))
 4. **Monitor** - Review Root Platform logs and metrics
 5. **Iterate** - Refine based on production usage
 

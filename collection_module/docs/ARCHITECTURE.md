@@ -9,7 +9,7 @@ The collection module follows a simple service-oriented architecture with depend
 ## Directory Structure
 
 ```
-stripe_collection_module/
+collection_module/
 ├── code/
 │   ├── core/                    # Core domain models and DI container
 │   │   ├── models/              # Domain model interfaces

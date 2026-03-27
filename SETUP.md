@@ -42,11 +42,11 @@ The setup script will prompt you for:
 **`.root-auth`** - Authentication:
 - Root Platform API Key (stored securely, gitignored)
 
-For detailed information about these files, see [Root Configuration Guide](stripe_collection_module/docs/ROOT_CONFIGURATION.md).
+For detailed information about these files, see [Root Configuration Guide](collection_module/docs/ROOT_CONFIGURATION.md).
 
 ### 3. Configure Environment
 
-Edit `stripe_collection_module/code/env.ts` with your actual credentials:
+Edit `collection_module/code/env.ts` with your actual credentials:
 
 ```typescript
 export default {
@@ -79,7 +79,7 @@ Both files are already in `.gitignore`.
 collection-module-template_stripe/
 ├── setup.sh                          # Automated setup script
 ├── README.md                         # Main documentation
-└── stripe_collection_module/
+└── collection_module/
     ├── code/
     │   ├── controllers/              # Event handlers
     │   │   ├── root-event-processors/
@@ -108,7 +108,7 @@ collection-module-template_stripe/
 
 ### 1. Update Module Metadata
 
-Edit `stripe_collection_module/package.json`:
+Edit `collection_module/package.json`:
 
 ```json
 {
@@ -182,7 +182,7 @@ container.register(
 ### Running Locally
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 
 # Lint your code
 npm run lint
@@ -250,7 +250,7 @@ npm run deploy:production
 npm run deploy:dry-run
 ```
 
-See [DEPLOYMENT.md](stripe_collection_module/docs/DEPLOYMENT.md) for details.
+See [DEPLOYMENT.md](collection_module/docs/DEPLOYMENT.md) for details.
 
 ## Configuration Management
 
@@ -287,9 +287,9 @@ code/env.production.ts
 ## Next Steps
 
 1. **Review Documentation**
-   - [Customization Guide](stripe_collection_module/docs/CUSTOMIZING.md)
-   - [Best Practices](stripe_collection_module/docs/BEST_PRACTICES.md)
-   - [Deployment Guide](stripe_collection_module/docs/DEPLOYMENT.md)
+   - [Customization Guide](collection_module/docs/CUSTOMIZING.md)
+   - [Best Practices](collection_module/docs/BEST_PRACTICES.md)
+   - [Deployment Guide](collection_module/docs/DEPLOYMENT.md)
 
 2. **Implement Your Logic**
    - Start with one controller
@@ -308,9 +308,9 @@ code/env.production.ts
 
 ## Getting Help
 
-- Check the [README](stripe_collection_module/README.md) for overview
-- Review [example controllers](stripe_collection_module/code/controllers/)
-- See [Stripe Integration Guide](stripe_collection_module/docs/CUSTOMIZING.md)
+- Check the [README](collection_module/README.md) for overview
+- Review [example controllers](collection_module/code/controllers/)
+- See [Stripe Integration Guide](collection_module/docs/CUSTOMIZING.md)
 - Root Platform docs: https://docs.root.co.za
 - Stripe API docs: https://stripe.com/docs/api
 

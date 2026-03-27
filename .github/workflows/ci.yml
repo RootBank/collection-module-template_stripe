@@ -20,21 +20,21 @@ jobs:
         with:
           node-version: 18.x
           cache: 'npm'
-          cache-dependency-path: stripe_collection_module/package-lock.json
+          cache-dependency-path: collection_module/package-lock.json
 
       - name: Install dependencies
         run: |
-          cd stripe_collection_module
+          cd collection_module
           npm ci
 
       - name: Create env.ts for build
         run: |
-          cd stripe_collection_module
+          cd collection_module
           cp code/env.sample.ts code/env.ts
 
       - name: Run ESLint
         run: |
-          cd stripe_collection_module
+          cd collection_module
           npm run lint
 
   test:
@@ -50,21 +50,21 @@ jobs:
         with:
           node-version: 18.x
           cache: 'npm'
-          cache-dependency-path: stripe_collection_module/package-lock.json
+          cache-dependency-path: collection_module/package-lock.json
 
       - name: Install dependencies
         run: |
-          cd stripe_collection_module
+          cd collection_module
           npm ci
 
       - name: Create env.ts for build
         run: |
-          cd stripe_collection_module
+          cd collection_module
           cp code/env.sample.ts code/env.ts
 
       - name: Run tests with coverage
         run: |
-          cd stripe_collection_module
+          cd collection_module
           npm test -- --coverage --ci
 
       - name: Comment PR with coverage
@@ -74,7 +74,7 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const coveragePath = './stripe_collection_module/coverage/coverage-summary.json';
+            const coveragePath = './collection_module/coverage/coverage-summary.json';
 
             if (fs.existsSync(coveragePath)) {
               const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
@@ -113,20 +113,20 @@ jobs:
         with:
           node-version: 18.x
           cache: 'npm'
-          cache-dependency-path: stripe_collection_module/package-lock.json
+          cache-dependency-path: collection_module/package-lock.json
 
       - name: Install dependencies
         run: |
-          cd stripe_collection_module
+          cd collection_module
           npm ci
 
       - name: Create env.ts for build
         run: |
-          cd stripe_collection_module
+          cd collection_module
           cp code/env.sample.ts code/env.ts
 
       - name: Build TypeScript
         run: |
-          cd stripe_collection_module
+          cd collection_module
           npm run build
           echo "✅ TypeScript compilation successful"

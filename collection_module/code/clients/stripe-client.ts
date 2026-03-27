@@ -6,6 +6,6 @@ export default class StripeClient {
 
   constructor() {
     const config = getConfigService();
-    this.stripeSDK = new Stripe(config.get('stripeSecretKey'));
+    this.stripeSDK = new Stripe(config.get('providerSecretKey'));
   }
 }

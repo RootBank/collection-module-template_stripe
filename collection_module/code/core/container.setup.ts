@@ -44,9 +44,10 @@ export function createContainer(): Container {
     ServiceLifetime.SINGLETON
   );
 
-  // Register API Clients (Infrastructure Layer)
+  // Register Payment Provider Client (Infrastructure Layer)
+  // Default: Stripe. To use a different provider, replace the import below.
   container.register(
-    ServiceToken.STRIPE_CLIENT,
+    ServiceToken.PROVIDER_CLIENT,
     () => {
       // eslint-disable-next-line unicorn/prefer-module
       const StripeClient = require('../clients/stripe-client').default;
@@ -65,7 +66,7 @@ export function createContainer(): Container {
     ServiceLifetime.SINGLETON
   );
 
-  // Register Business Services
+  // Register Business Services (Root + Payment Provider)
   container.register(
     ServiceToken.ROOT_SERVICE,
     (c) => {
@@ -81,10 +82,10 @@ export function createContainer(): Container {
   );
 
   container.register(
-    ServiceToken.STRIPE_SERVICE,
+    ServiceToken.PROVIDER_SERVICE,
     (c) => {
       const logService = c.resolve<LogService>(ServiceToken.LOG_SERVICE);
-      const stripeClient = c.resolve(ServiceToken.STRIPE_CLIENT);
+      const stripeClient = c.resolve(ServiceToken.PROVIDER_CLIENT);
       // eslint-disable-next-line unicorn/prefer-module
       return new (require('../services/stripe.service').StripeService)(
         logService,

@@ -47,7 +47,7 @@ Root Platform takes care of:
 Ensure your collection module is ready for deployment:
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 
 # Run validation
 npm run validate
@@ -302,15 +302,15 @@ jobs:
           node-version: '18'
       
       - name: Install dependencies
-        working-directory: ./stripe_collection_module
+        working-directory: ./collection_module
         run: npm ci
       
       - name: Run tests
-        working-directory: ./stripe_collection_module
+        working-directory: ./collection_module
         run: npm test
       
       - name: Validate configuration
-        working-directory: ./stripe_collection_module
+        working-directory: ./collection_module
         run: npm run validate
       
       - name: Publish to Root Platform (Sandbox)

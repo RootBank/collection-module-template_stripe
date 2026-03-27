@@ -48,7 +48,7 @@ const verifyWebhookSignature = (request: any): boolean => {
 
   // Verify signature
   const config = getConfigService();
-  const webhookSecret = config.get('stripeWebhookSigningSecret');
+  const webhookSecret = config.get('providerWebhookSigningSecret');
   const signedPayload = `${signature.t}.${body.toString('utf8')}`;
   const expectedSignature = crypto
     .createHmac('sha256', webhookSecret)

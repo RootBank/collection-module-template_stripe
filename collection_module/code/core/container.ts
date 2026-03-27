@@ -138,13 +138,15 @@ export const ServiceToken = {
   LOG_SERVICE: Symbol('LogService'),
   CONFIG_SERVICE: Symbol('ConfigService'),
 
-  // API Clients
-  STRIPE_CLIENT: Symbol('StripeClient'),
+  // API Clients (provider-agnostic tokens)
+  // The default template registers Stripe implementations under these tokens.
+  // To swap providers, register your provider's client/service here instead.
+  PROVIDER_CLIENT: Symbol('ProviderClient'),
   ROOT_CLIENT: Symbol('RootClient'),
 
-  // Business Services
+  // Business Services (provider-agnostic tokens)
   ROOT_SERVICE: Symbol('RootService'),
-  STRIPE_SERVICE: Symbol('StripeService'),
+  PROVIDER_SERVICE: Symbol('ProviderService'),
   RENDER_SERVICE: Symbol('RenderService'),
 
   // Add your controller tokens here:

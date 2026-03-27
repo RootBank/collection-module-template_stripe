@@ -104,7 +104,7 @@ Visit the **Actions** tab in GitHub to:
 Before pushing code, run locally:
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 
 # 1. Run linter
 npm run lint

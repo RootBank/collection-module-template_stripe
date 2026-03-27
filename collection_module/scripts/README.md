@@ -273,12 +273,12 @@ jobs:
           node-version: '18'
       
       - name: Install dependencies
-        working-directory: ./stripe_collection_module
+        working-directory: ./collection_module
         run: npm ci
       
       - name: Deploy to Sandbox
         if: contains(github.ref, '-beta')
-        working-directory: ./stripe_collection_module
+        working-directory: ./collection_module
         env:
           ROOT_API_KEY: ${{ secrets.ROOT_SANDBOX_API_KEY }}
           ROOT_ORG_ID: ${{ secrets.ROOT_ORG_ID }}
@@ -286,7 +286,7 @@ jobs:
       
       - name: Deploy to Production
         if: "!contains(github.ref, '-beta')"
-        working-directory: ./stripe_collection_module
+        working-directory: ./collection_module
         env:
           ROOT_API_KEY: ${{ secrets.ROOT_PRODUCTION_API_KEY }}
           ROOT_ORG_ID: ${{ secrets.ROOT_ORG_ID }}

@@ -2,13 +2,12 @@
 
 ## Architecture Context
 
-For every conversation about code architecture, building features, or refactoring, load the Collection Module architecture patterns: 
+For conversations about code architecture, building features, or refactoring, use the project's Cursor skills in `collection_module/.cursor/skills/`. Skills are auto-discovered; relevant ones include:
 
-stripe_collection_module/.cursor/mcps/collection-module.mcp
-
-This file contains the architectural patterns for:
-- Services, Controllers, Clients, and Adapters
-- Dependency Injection patterns
-- Logging patterns
-- Testing patterns
-- Error handling patterns
+- **collection-module-build** — Build a complete module from a provider spec/API doc (start here for new providers)
+- **collection-module-architecture** — Layer structure, directory layout, DI overview
+- **collection-module-patterns** — Services, Controllers, Clients, Adapters, error handling
+- **collection-module-setup** — Configuration and environment
+- **collection-module-integration** — Webhooks, lifecycle hooks, provider customization
+- **collection-module-testing** — Jest, mocking, coverage
+- **collection-module-ops** — Deployment, CI/CD, logging, best practices

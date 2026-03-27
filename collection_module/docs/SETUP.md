@@ -21,7 +21,7 @@ The script will guide you through:
 ### 2. Update Environment Variables
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 # Edit code/env.ts with your actual API keys
 ```
 
@@ -80,7 +80,7 @@ cd my-provider-collection-module
 
 1. **Update module configuration**
 
-Edit `stripe_collection_module/.root-config.json`:
+Edit `collection_module/.root-config.json`:
 
 ```json
 {
@@ -97,7 +97,7 @@ Edit `stripe_collection_module/.root-config.json`:
 2. **Create environment file**
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 cp code/env.sample.ts code/env.ts
 ```
 
@@ -124,7 +124,7 @@ export const ROOT_COLLECTION_MODULE_KEY = 'cm_your_provider';
 ### Step 3: Install Dependencies
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 
 # Use correct Node version
 nvm use
@@ -262,7 +262,7 @@ npm run lint:fix  # Auto-fix some issues
 ### Project Structure
 
 ```
-stripe_collection_module/
+collection_module/
 ├── code/                           # Source code
 │   ├── core/                       # Domain models & DI container
 │   │   ├── models/                 # Data models

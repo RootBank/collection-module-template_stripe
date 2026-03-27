@@ -59,7 +59,7 @@ export async function renderCreatePaymentMethod(): Promise<string> {
     ServiceToken.CONFIG_SERVICE
   );
   const stripeClient = container.resolve<StripeClient>(
-    ServiceToken.STRIPE_CLIENT
+    ServiceToken.PROVIDER_CLIENT
   );
 
   logService.info(
@@ -77,7 +77,7 @@ export async function renderCreatePaymentMethod(): Promise<string> {
 
     // Render form using RenderService
     return renderService.renderCreatePaymentMethod({
-      stripePublishableKey: configService.get('stripePublishableKey'),
+      stripePublishableKey: configService.get('providerPublishableKey'),
       setupIntentClientSecret: setupIntent.client_secret,
     });
   } catch (error) {
@@ -107,7 +107,7 @@ export async function renderViewPaymentMethodSummary(params: {
     ServiceToken.RENDER_SERVICE
   );
   const stripeClient = container.resolve<StripeClient>(
-    ServiceToken.STRIPE_CLIENT
+    ServiceToken.PROVIDER_CLIENT
   );
 
   logService.info(

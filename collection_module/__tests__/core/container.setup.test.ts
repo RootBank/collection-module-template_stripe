@@ -18,10 +18,10 @@ describe('Container Setup', () => {
       expect(container).toBeDefined();
       expect(container.has(ServiceToken.CONFIG_SERVICE)).toBe(true);
       expect(container.has(ServiceToken.LOG_SERVICE)).toBe(true);
-      expect(container.has(ServiceToken.STRIPE_CLIENT)).toBe(true);
+      expect(container.has(ServiceToken.PROVIDER_CLIENT)).toBe(true);
       expect(container.has(ServiceToken.ROOT_CLIENT)).toBe(true);
       expect(container.has(ServiceToken.ROOT_SERVICE)).toBe(true);
-      expect(container.has(ServiceToken.STRIPE_SERVICE)).toBe(true);
+      expect(container.has(ServiceToken.PROVIDER_SERVICE)).toBe(true);
     });
 
     it('should allow resolving ConfigService', () => {
@@ -51,7 +51,7 @@ describe('Container Setup', () => {
     it('should have StripeService registered', () => {
       const container = createContainer();
 
-      expect(container.has(ServiceToken.STRIPE_SERVICE)).toBe(true);
+      expect(container.has(ServiceToken.PROVIDER_SERVICE)).toBe(true);
     });
 
     it('should have RenderService registered', () => {

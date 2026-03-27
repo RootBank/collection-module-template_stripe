@@ -52,7 +52,7 @@ Add to your README:
 Before pushing, verify your changes locally:
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 
 # Run linter
 npm run lint

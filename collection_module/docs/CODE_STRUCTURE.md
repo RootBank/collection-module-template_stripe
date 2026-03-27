@@ -5,7 +5,7 @@ This document provides an overview of the codebase organization and links to det
 ## Directory Overview
 
 ```
-stripe_collection_module/
+collection_module/
 ├── code/                          # Source code
 │   ├── adapters/                  # Data transformation layer
 │   ├── clients/                   # External API wrappers

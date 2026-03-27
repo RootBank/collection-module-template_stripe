@@ -8,7 +8,7 @@ This guide explains how to configure your collection module for the Root Platfor
 
 This file contains the collection module metadata and settings used by the Root Platform.
 
-**Location:** `stripe_collection_module/.root-config.json`
+**Location:** `collection_module/.root-config.json`
 
 **Format:**
 
@@ -77,7 +77,7 @@ For different environments (sandbox/production), you can:
 
 This file contains authentication credentials for the Root Platform API.
 
-**Location:** `stripe_collection_module/.root-auth`
+**Location:** `collection_module/.root-auth`
 
 **Format:**
 
@@ -146,14 +146,14 @@ All values will be saved to the appropriate files.
 
 1. **Configure `.root-config.json`:**
    ```bash
-   cd stripe_collection_module
+   cd collection_module
    # Edit the file with your values
    nano .root-config.json
    ```
 
 2. **Create `.root-auth`:**
    ```bash
-   cd stripe_collection_module
+   cd collection_module
    cp .root-auth.sample .root-auth
    # Edit with your actual API key
    nano .root-auth
@@ -168,7 +168,7 @@ All values will be saved to the appropriate files.
 Check that your configuration is valid:
 
 ```bash
-cd stripe_collection_module
+cd collection_module
 
 # Check .root-config.json format
 cat .root-config.json | jq '.'
@@ -233,7 +233,7 @@ curl -H "Authorization: Basic $(cat .root-auth | grep ROOT_API_KEY | cut -d= -f2
 
 **Solution:**
 ```bash
-cd stripe_collection_module
+cd collection_module
 cp .root-auth.sample .root-auth
 # Edit with your API key
 nano .root-auth

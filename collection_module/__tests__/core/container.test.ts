@@ -222,11 +222,11 @@ describe('Container', () => {
     it('should have predefined service tokens', () => {
       expect(ServiceToken.LOG_SERVICE).toBeDefined();
       expect(ServiceToken.CONFIG_SERVICE).toBeDefined();
-      expect(ServiceToken.STRIPE_CLIENT).toBeDefined();
+      expect(ServiceToken.PROVIDER_CLIENT).toBeDefined();
       expect(ServiceToken.ROOT_CLIENT).toBeDefined();
       expect(ServiceToken.ROOT_CLIENT).toBeDefined();
       expect(ServiceToken.ROOT_SERVICE).toBeDefined();
-      expect(ServiceToken.STRIPE_SERVICE).toBeDefined();
+      expect(ServiceToken.PROVIDER_SERVICE).toBeDefined();
       expect(ServiceToken.RENDER_SERVICE).toBeDefined();
     });
 

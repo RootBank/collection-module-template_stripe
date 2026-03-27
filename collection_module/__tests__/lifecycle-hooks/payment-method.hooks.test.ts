@@ -35,7 +35,7 @@ describe('Payment Method Hooks', () => {
     mockContainer = {
       resolve: jest.fn((token: symbol) => {
         if (token === ServiceToken.LOG_SERVICE) return mockLogService;
-        if (token === ServiceToken.STRIPE_CLIENT) return mockStripeClient;
+        if (token === ServiceToken.PROVIDER_CLIENT) return mockStripeClient;
         if (token === ServiceToken.CONFIG_SERVICE) return mockConfigService;
         if (token === ServiceToken.RENDER_SERVICE) return mockRenderService;
         return null;

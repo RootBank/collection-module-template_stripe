@@ -16,7 +16,7 @@ jest.mock('../code/core/container.setup');
 jest.mock('../code/services/config-instance', () => ({
   getConfigService: jest.fn(() => ({
     get: jest.fn((key: string) => {
-      if (key === 'stripeWebhookSigningSecret') return 'whsec_test_secret';
+      if (key === 'providerWebhookSigningSecret') return 'whsec_test_secret';
       return null;
     }),
   })),
@@ -45,7 +45,7 @@ describe('Webhook Hooks', () => {
     // Reset config mock to return fresh instance each time
     (getConfigService as jest.Mock).mockReturnValue({
       get: jest.fn((key: string) => {
-        if (key === 'stripeWebhookSigningSecret') return 'whsec_test_secret';
+        if (key === 'providerWebhookSigningSecret') return 'whsec_test_secret';
         return null;
       }),
     });

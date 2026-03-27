@@ -3,6 +3,9 @@
  *
  * This service provides type-safe access to environment-specific configuration.
  * It validates configuration on initialization and throws errors for missing values.
+ *
+ * Config field names use provider-agnostic naming (provider*) so the same
+ * service works regardless of which payment provider is integrated.
  */
 
 import * as env from '../env';
@@ -10,13 +13,14 @@ import * as env from '../env';
 export interface EnvironmentConfig {
   timeDelayInMilliseconds: string;
   environment: Environment;
-  stripeWebhookSigningSecret: string;
-  stripeProductId: string;
   rootCollectionModuleKey: string;
-  stripePublishableKey: string;
-  stripeSecretKey: string;
   rootApiKey: string;
   rootBaseUrl: string;
+  // Provider-specific config (generic names — works for Stripe, PayFast, etc.)
+  providerWebhookSigningSecret: string;
+  providerPublishableKey: string;
+  providerSecretKey: string;
+  providerProductId: string;
 }
 
 export interface ConfigMap {
@@ -40,7 +44,7 @@ export enum Environment {
  * @example
  * ```typescript
  * const config = new ConfigurationService();
- * const apiKey = config.get('stripeSecretKey');
+ * const apiKey = config.get('providerSecretKey');
  * const isProduction = config.isProduction();
  * ```
  */
@@ -63,6 +67,9 @@ export class ConfigurationService {
 
   /**
    * Build configuration map from environment variables
+   *
+   * Maps PROVIDER_* env vars to generic providerX config fields.
+   * When switching providers, update env.ts with the new provider's values.
    */
   private buildConfigMap(): ConfigMap {
     const baseConfig = {
@@ -74,10 +81,10 @@ export class ConfigurationService {
     const production: EnvironmentConfig = {
       ...baseConfig,
       environment: Environment.PRODUCTION,
-      stripeWebhookSigningSecret: env.STRIPE_WEBHOOK_SIGNING_SECRET_LIVE,
-      stripePublishableKey: env.STRIPE_PUBLISHABLE_KEY_LIVE,
-      stripeSecretKey: env.STRIPE_SECRET_KEY_LIVE,
-      stripeProductId: env.STRIPE_PRODUCT_ID_LIVE,
+      providerWebhookSigningSecret: env.PROVIDER_WEBHOOK_SIGNING_SECRET_LIVE,
+      providerPublishableKey: env.PROVIDER_PUBLISHABLE_KEY_LIVE,
+      providerSecretKey: env.PROVIDER_SECRET_KEY_LIVE,
+      providerProductId: env.PROVIDER_PRODUCT_ID_LIVE,
       rootApiKey: env.ROOT_API_KEY_LIVE,
       rootBaseUrl: env.ROOT_BASE_URL_LIVE,
     };
@@ -85,10 +92,10 @@ export class ConfigurationService {
     const sandbox: EnvironmentConfig = {
       ...baseConfig,
       environment: Environment.SANDBOX,
-      stripeWebhookSigningSecret: env.STRIPE_WEBHOOK_SIGNING_SECRET_TEST,
-      stripePublishableKey: env.STRIPE_PUBLISHABLE_KEY_TEST,
-      stripeSecretKey: env.STRIPE_SECRET_KEY_TEST,
-      stripeProductId: env.STRIPE_PRODUCT_ID_TEST,
+      providerWebhookSigningSecret: env.PROVIDER_WEBHOOK_SIGNING_SECRET_TEST,
+      providerPublishableKey: env.PROVIDER_PUBLISHABLE_KEY_TEST,
+      providerSecretKey: env.PROVIDER_SECRET_KEY_TEST,
+      providerProductId: env.PROVIDER_PRODUCT_ID_TEST,
       rootApiKey: env.ROOT_API_KEY_SANDBOX,
       rootBaseUrl: env.ROOT_BASE_URL_SANDBOX,
     };

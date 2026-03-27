@@ -15,7 +15,7 @@ MAGENTA='\033[0;35m'
 NC='\033[0m' # No Color
 
 # Read required Node version from .nvmrc
-NVMRC_PATH="stripe_collection_module/.nvmrc"
+NVMRC_PATH="collection_module/.nvmrc"
 if [ -f "$NVMRC_PATH" ]; then
   REQUIRED_NODE_VERSION=$(cat "$NVMRC_PATH" | tr -d '\n\r')
 else
@@ -30,7 +30,7 @@ echo -e "${BLUE}╚════════════════════�
 echo ""
 
 # Check if we're in the right directory
-if [ ! -f "stripe_collection_module/package.json" ]; then
+if [ ! -f "collection_module/package.json" ]; then
   echo -e "${RED}❌ Error: This script must be run from the template root directory${NC}"
   exit 1
 fi
@@ -139,8 +139,8 @@ else
   echo -e "${GREEN}✓ Node.js ${CURRENT_NODE_VERSION}.x detected (required: ${REQUIRED_NODE_VERSION}.x)${NC}"
 fi
 
-# Ensure nvm use is called in the stripe_collection_module directory
-cd stripe_collection_module
+# Ensure nvm use is called in the collection_module directory
+cd collection_module
 if [ -f ".nvmrc" ]; then
   if command -v nvm &> /dev/null || [ -f "$HOME/.nvm/nvm.sh" ]; then
     export NVM_DIR="$HOME/.nvm"
@@ -516,14 +516,14 @@ echo -e "  ${CYAN}✓${NC} .root-auth configured"
 echo -e "  ${CYAN}✓${NC} code/env.ts configured"
 echo ""
 echo -e "${YELLOW}Files Created/Updated:${NC}"
-echo -e "  ${BLUE}→${NC} ${CYAN}stripe_collection_module/.root-config.json${NC}"
-echo -e "  ${BLUE}→${NC} ${CYAN}stripe_collection_module/.root-auth${NC}"
-echo -e "  ${BLUE}→${NC} ${CYAN}stripe_collection_module/code/env.ts${NC}"
+echo -e "  ${BLUE}→${NC} ${CYAN}collection_module/.root-config.json${NC}"
+echo -e "  ${BLUE}→${NC} ${CYAN}collection_module/.root-auth${NC}"
+echo -e "  ${BLUE}→${NC} ${CYAN}collection_module/code/env.ts${NC}"
 echo ""
 echo -e "${GREEN}Next Steps:${NC}"
 echo ""
 echo -e "${CYAN}1. Before running commands, ensure correct Node version:${NC}"
-echo -e "   ${YELLOW}cd stripe_collection_module && nvm use${NC}"
+echo -e "   ${YELLOW}cd collection_module && nvm use${NC}"
 echo ""
 
 # Show rp CLI installation reminder if not installed
@@ -555,9 +555,9 @@ echo -e "   ${YELLOW}npm run deploy:dry-run:sandbox${NC}      - Test deployment 
 echo -e "   ${YELLOW}npm run deploy:dry-run:production${NC}   - Test deployment (production)"
 echo ""
 echo -e "${CYAN}$((5 + STEP_OFFSET)). Review documentation:${NC}"
-echo -e "   ${BLUE}→${NC} ${YELLOW}stripe_collection_module/docs/SETUP.md${NC}"
-echo -e "   ${BLUE}→${NC} ${YELLOW}stripe_collection_module/docs/DEPLOYMENT.md${NC}"
-echo -e "   ${BLUE}→${NC} ${YELLOW}stripe_collection_module/docs/CUSTOMIZING.md${NC}"
+echo -e "   ${BLUE}→${NC} ${YELLOW}collection_module/docs/SETUP.md${NC}"
+echo -e "   ${BLUE}→${NC} ${YELLOW}collection_module/docs/DEPLOYMENT.md${NC}"
+echo -e "   ${BLUE}→${NC} ${YELLOW}collection_module/docs/CUSTOMIZING.md${NC}"
 echo ""
 echo -e "${GREEN}✨ Happy coding!${NC}"
 echo ""

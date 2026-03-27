@@ -109,7 +109,7 @@ describe('ConfigurationService', () => {
     });
 
     it('should get stripe secret key', () => {
-      const secretKey = config.get('stripeSecretKey');
+      const secretKey = config.get('providerSecretKey');
       expect(secretKey).toBeDefined();
     });
 
@@ -122,7 +122,7 @@ describe('ConfigurationService', () => {
       const allConfig = config.getAll();
 
       expect(allConfig).toHaveProperty('environment');
-      expect(allConfig).toHaveProperty('stripeSecretKey');
+      expect(allConfig).toHaveProperty('providerSecretKey');
       expect(allConfig).toHaveProperty('rootApiKey');
     });
 
@@ -144,8 +144,8 @@ describe('ConfigurationService', () => {
 
       expect(config.get('environment')).toBe('production');
       // Production should use LIVE keys
-      expect(config.get('stripePublishableKey')).toContain('pk_live');
-      expect(config.get('stripeSecretKey')).toContain('sk_live');
+      expect(config.get('providerPublishableKey')).toContain('pk_live');
+      expect(config.get('providerSecretKey')).toContain('sk_live');
     });
 
     it('should load sandbox configuration', () => {
@@ -156,8 +156,8 @@ describe('ConfigurationService', () => {
 
       expect(config.get('environment')).toBe('sandbox');
       // Sandbox should use TEST keys
-      expect(config.get('stripePublishableKey')).toContain('pk_test');
-      expect(config.get('stripeSecretKey')).toContain('sk_test');
+      expect(config.get('providerPublishableKey')).toContain('pk_test');
+      expect(config.get('providerSecretKey')).toContain('sk_test');
     });
 
     it('should have different API keys for production vs sandbox', () => {
@@ -170,8 +170,8 @@ describe('ConfigurationService', () => {
         skipValidation: true,
       });
 
-      expect(prodConfig.get('stripeSecretKey')).not.toBe(
-        sandboxConfig.get('stripeSecretKey')
+      expect(prodConfig.get('providerSecretKey')).not.toBe(
+        sandboxConfig.get('providerSecretKey')
       );
       expect(prodConfig.get('rootApiKey')).not.toBe(
         sandboxConfig.get('rootApiKey')
@@ -234,7 +234,7 @@ describe('ConfigurationService', () => {
 
       // TypeScript should ensure these are the correct types
       const environment: string = config.get('environment');
-      const stripeKey: string = config.get('stripeSecretKey');
+      const stripeKey: string = config.get('providerSecretKey');
 
       expect(typeof environment).toBe('string');
       expect(typeof stripeKey).toBe('string');
@@ -246,10 +246,10 @@ describe('ConfigurationService', () => {
 
       // Should have all required properties
       expect(allConfig).toHaveProperty('environment');
-      expect(allConfig).toHaveProperty('stripeSecretKey');
-      expect(allConfig).toHaveProperty('stripePublishableKey');
-      expect(allConfig).toHaveProperty('stripeProductId');
-      expect(allConfig).toHaveProperty('stripeWebhookSigningSecret');
+      expect(allConfig).toHaveProperty('providerSecretKey');
+      expect(allConfig).toHaveProperty('providerPublishableKey');
+      expect(allConfig).toHaveProperty('providerProductId');
+      expect(allConfig).toHaveProperty('providerWebhookSigningSecret');
       expect(allConfig).toHaveProperty('rootApiKey');
       expect(allConfig).toHaveProperty('rootBaseUrl');
       expect(allConfig).toHaveProperty('rootCollectionModuleKey');
