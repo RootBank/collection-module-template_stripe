@@ -52,6 +52,7 @@
     "test:ci": "jest --ci --forceExit --coverage --maxWorkers=2",
     "precommit": "npm run lint && npm run test",
     "prepush": "npm run lint && npm run test && npm run build",
+    "scaffold:provider": "node scripts/scaffold-provider.js",
     "predeploy": "npm run validate && npm run test && npm run build",
     "deploy:sandbox": "bash scripts/deploy.sh sandbox",
     "deploy:production": "bash scripts/deploy.sh production",
