@@ -25,7 +25,7 @@ npm test -- log.service.test.ts
 npm test -- --testNamePattern="LogService"
 ```
 
-**Important**: Always run `nvm use` first to switch to Node 18+, as specified in `.nvmrc`.
+**Important**: Always run `nvm use` first to switch to Node 24+, as specified in `.nvmrc`.
 
 ## Test Structure
 

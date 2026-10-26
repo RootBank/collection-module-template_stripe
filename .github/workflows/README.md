@@ -14,7 +14,7 @@ This directory contains automated CI/CD workflows for the Stripe Collection Modu
 
 #### Test & Lint Job
 1. **Checkout** - Gets the code
-2. **Setup Node.js** - Installs Node.js 18.x with npm caching
+2. **Setup Node.js** - Installs Node.js 24.x with npm caching
 3. **Install** - Runs `npm ci` for clean dependency install
 4. **Lint** - Runs ESLint to check code quality
 5. **Test** - Runs Jest tests with coverage
@@ -24,7 +24,7 @@ This directory contains automated CI/CD workflows for the Stripe Collection Modu
 
 #### Build Job
 1. **Checkout** - Gets the code
-2. **Setup Node.js** - Installs Node.js 18.x
+2. **Setup Node.js** - Installs Node.js 24.x
 3. **Install** - Runs `npm ci`
 4. **Build** - Compiles TypeScript to JavaScript
 5. **Verify** - Checks that build artifacts were created
@@ -68,7 +68,7 @@ npm run build
 
 ### Node Version
 
-The workflow uses Node.js 18.x to match the `.nvmrc` file.
+The workflow uses Node.js 24.x to match the `.nvmrc` file.
 
 ### Coverage Thresholds
 
@@ -87,7 +87,7 @@ The workflow caches npm dependencies for faster runs.
 ### Failing Tests
 
 If tests fail in CI but pass locally:
-1. Check Node.js version matches (18.x)
+1. Check Node.js version matches (24.x)
 2. Clear local `node_modules` and reinstall
 3. Run `npm ci` instead of `npm install`
 4. Check for environment-specific code
@@ -131,7 +131,7 @@ Update the matrix in `ci.yml`:
 ```yaml
 strategy:
   matrix:
-    node-version: [18.x, 20.x]  # Test multiple versions
+    node-version: [24.x]  # Test multiple versions
 ```
 
 ### Optional: Codecov Integration

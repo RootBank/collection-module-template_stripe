@@ -44,7 +44,7 @@ Pull requests show three independent status checks:
 
 ```yaml
 - Checkout code
-- Setup Node.js 18.x
+- Setup Node.js 24.x
 - Install dependencies (npm ci)
 - Create env.ts from env.sample.ts
 - Run ESLint
@@ -54,7 +54,7 @@ Pull requests show three independent status checks:
 
 ```yaml
 - Checkout code
-- Setup Node.js 18.x
+- Setup Node.js 24.x
 - Install dependencies (npm ci)
 - Create env.ts from env.sample.ts
 - Run Jest tests with coverage (275+ tests)
@@ -65,7 +65,7 @@ Pull requests show three independent status checks:
 
 ```yaml
 - Checkout code
-- Setup Node.js 18.x
+- Setup Node.js 24.x
 - Install dependencies (npm ci)
 - Create env.ts from env.sample.ts
 - Build TypeScript (type checking only - noEmit: true)

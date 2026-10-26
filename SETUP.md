@@ -4,7 +4,7 @@ This guide will help you set up and customize this template for your specific us
 
 ## Prerequisites
 
-- Node.js 18+ (check with `node --version`)
+- Node.js 24+ (check with `node --version`)
 - npm or yarn
 - Root Platform account and API credentials
 - Stripe account and API keys
