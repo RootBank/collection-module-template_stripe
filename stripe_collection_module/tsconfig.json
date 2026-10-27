@@ -9,6 +9,7 @@
     "module": "es2022",
     "target": "es2023",
     "skipLibCheck": true,
+    "esModuleInterop": true,
     "allowJs": true,
     "strict": true,
     "moduleResolution": "Bundler",
