@@ -227,6 +227,7 @@ if grep -q "my_collection_module_cm_stripe\|test_cm" .root-config.json 2>/dev/nu
   # Update .root-config.json
   cat > .root-config.json << EOF
 {
+  "stack": "root-node-24",
   "collectionModuleKey": "${cm_key}",
   "collectionModuleName": "${cm_name}",
   "organizationId": "${org_id}",
