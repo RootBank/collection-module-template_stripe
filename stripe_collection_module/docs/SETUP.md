@@ -34,7 +34,7 @@ npm run validate
 ### 4. Run Tests
 
 ```bash
-nvm use  # Use Node 18+
+nvm use  # Use Node 24+
 npm test
 ```
 
@@ -47,7 +47,7 @@ You're ready to customize! See [CUSTOMIZING.md](./CUSTOMIZING.md) for next steps
 ### Prerequisites
 
 **Required:**
-- Node.js 18+ (use `nvm` for version management)
+- Node.js 24+ (use `nvm` for version management)
 - npm 8+
 - Git
 

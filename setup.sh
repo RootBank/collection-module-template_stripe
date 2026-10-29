@@ -20,7 +20,7 @@ if [ -f "$NVMRC_PATH" ]; then
   REQUIRED_NODE_VERSION=$(cat "$NVMRC_PATH" | tr -d '\n\r')
 else
   # Fallback to default if .nvmrc doesn't exist
-  REQUIRED_NODE_VERSION="18"
+  REQUIRED_NODE_VERSION="24"
   echo -e "${YELLOW}⚠️  .nvmrc not found, using default Node version: ${REQUIRED_NODE_VERSION}${NC}"
 fi
 
@@ -227,6 +227,7 @@ if grep -q "my_collection_module_cm_stripe\|test_cm" .root-config.json 2>/dev/nu
   # Update .root-config.json
   cat > .root-config.json << EOF
 {
+  "stack": "root-node-24",
   "collectionModuleKey": "${cm_key}",
   "collectionModuleName": "${cm_name}",
   "organizationId": "${org_id}",

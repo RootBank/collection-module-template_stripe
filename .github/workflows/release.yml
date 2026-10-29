@@ -10,6 +10,11 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+
       - name: Install root platform CLI
         run: npm install -g @rootplatform/cli
 

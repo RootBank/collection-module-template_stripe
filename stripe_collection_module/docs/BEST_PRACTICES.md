@@ -5,6 +5,7 @@ This guide covers production best practices for building and maintaining collect
 ## Table of Contents
 
 - [Architecture](#architecture)
+- [Runtime Dependencies](#runtime-dependencies)
 - [Error Handling](#error-handling)
 - [Performance](#performance)
 - [Security](#security)
@@ -70,6 +71,37 @@ class PaymentService {
 - Use models for data transformation
 
 ---
+
+## Runtime Dependencies
+
+### Require every dependency explicitly
+
+Module code is bundled with `packages: 'external'`, so every `require` resolves
+from the shared lambda layer at runtime, never from this repo's `node_modules`.
+Collection modules get no injected scope: reach a dependency by requiring it.
+
+```js
+const dayjs = require('dayjs');
+
+const dueDate = dayjs().add(30, 'day');
+```
+
+Product modules are different. They receive `dayjs` as an ambient binding from a
+generated wrapper, so a product-module snippet that calls a bare `dayjs(...)`
+will throw `ReferenceError` when pasted into a collection module. Add the
+`require` when you copy code across.
+
+### Pin layer packages to exact versions
+
+The layer is built with `npm ci --omit=dev` from its own lockfile, so production
+serves one exact version regardless of what any caret says. A caret here lets
+`npm install` resolve a newer version locally, and local tests then pass against
+a version production does not have.
+
+Every dependency the layer provides is declared in `package.json` at the exact
+version the layer's lockfile resolves — no caret, no tilde — whether or not this
+module imports it. The declaration is what makes local builds, types and tests
+agree with production.
 
 ## Error Handling
 
